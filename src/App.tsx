@@ -31,6 +31,17 @@ import { themes } from '@/data/themes';
 import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
+import { useGLTF } from '@react-three/drei';
+
+// Preload all models in the background
+useGLTF.preload('/models/india.glb');
+useGLTF.preload('/models/japan.glb');
+useGLTF.preload('/models/china.glb');
+useGLTF.preload('/models/germany.glb');
+useGLTF.preload('/models/canada.glb');
+useGLTF.preload('/models/switzerland.glb');
+useGLTF.preload('/models/maple_leaf.glb');
+useGLTF.preload('/models/space.glb');
 
 const CountrySymbol = lazy(() => import('@/components/CountrySymbol'));
 
