@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { themes, sectionThemeMap } from '@/data/themes';
 import type { CountryTheme } from '@/data/themes';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export type ActiveThemeState = { key: string; theme: CountryTheme };
 
@@ -15,140 +11,107 @@ export function useScrollController(enabled: boolean) {
     theme: themes.india,
   });
   const lenisRef = useRef<Lenis | null>(null);
-  const reducedMotionRef = useRef(false);
 
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    reducedMotionRef.current = query.matches;
-    const onChange = () => {
-      reducedMotionRef.current = query.matches;
-    };
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
-  }, []);
+  // Apply CSS variables to multiple targets so the WHOLE page responds
+  const applyTheme = (themeKey: string) => {
+    const theme = themes[themeKey];
+    if (!theme) return;
 
+    setActiveTheme({ key: themeKey, theme });
+
+    // Apply to <html>, <body>, AND .app-shell
+    const targets = [
+      document.documentElement,
+      document.body,
+      document.querySelector('.app-shell'),
+    ].filter(Boolean) as HTMLElement[];
+
+    targets.forEach((el) => {
+      el.style.setProperty('--bg', theme.bg);
+      el.style.setProperty('--surface', theme.surface);
+      el.style.setProperty('--ink', theme.ink);
+      el.style.setProperty('--muted', theme.muted);
+      el.style.setProperty('--line', theme.line);
+      el.style.setProperty('--accent', theme.accent);
+      el.style.setProperty('--accent-soft', theme.accentSoft);
+      el.style.setProperty('--cyan', theme.cyan);
+      el.style.setProperty('--section-bg', theme.sectionBg);
+    });
+  };
+
+  // Lenis smooth scroll
   useEffect(() => {
     if (!enabled) return;
-    if (reducedMotionRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    // Wait for DOM to be ready and layout to settle
-    const init = () => {
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 1.5,
-        infinite: false,
-        autoRaf: true,
-      });
+    const lenis = new Lenis({
+      duration: 1.1,
+      smoothWheel: true,
+      wheelMultiplier: 0.9,
+    });
 
-      lenisRef.current = lenis;
+    lenisRef.current = lenis;
 
-      lenis.on('scroll', ScrollTrigger.update);
-
-      // Force ScrollTrigger to use Lenis scroll position
-      ScrollTrigger.scrollerProxy(document.documentElement, {
-        scrollTop(value) {
-          if (typeof value === 'number') {
-            lenis.scrollTo(value, { immediate: true });
-          }
-          return lenis.scroll;
-        },
-        getBoundingClientRect() {
-          return {
-            top: 0,
-            left: 0,
-            width: window.innerWidth,
-            height: window.innerHeight,
-          };
-        },
-      });
-
-      ScrollTrigger.refresh();
-    };
-
-    // Delay init by one frame so CSS layout is finished
-    const rafId = requestAnimationFrame(init);
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    const rafId = requestAnimationFrame(raf);
 
     return () => {
       cancelAnimationFrame(rafId);
-      lenisRef.current?.destroy();
+      lenis.destroy();
       lenisRef.current = null;
     };
   }, [enabled]);
 
+  // Theme switching via IntersectionObserver (reliable)
   useEffect(() => {
     if (!enabled) return;
 
-    const sections = sectionThemeMap
-      .map(({ sectionId }) => document.getElementById(sectionId))
-      .filter(Boolean) as HTMLElement[];
+    // Wait for DOM
+    const timer = setTimeout(() => {
+      const sections = sectionThemeMap
+        .map(({ sectionId }) => document.getElementById(sectionId))
+        .filter(Boolean) as HTMLElement[];
 
-    const applyTheme = (themeKey: string) => {
-      const theme = themes[themeKey];
-      if (!theme) return;
-      setActiveTheme({ key: themeKey, theme });
-
-      const root = document.querySelector('.app-shell') as HTMLElement | null;
-      if (!root) return;
-
-      if (reducedMotionRef.current) {
-        root.style.setProperty('--bg', theme.bg);
-        root.style.setProperty('--surface', theme.surface);
-        root.style.setProperty('--ink', theme.ink);
-        root.style.setProperty('--muted', theme.muted);
-        root.style.setProperty('--line', theme.line);
-        root.style.setProperty('--accent', theme.accent);
-        root.style.setProperty('--accent-soft', theme.accentSoft);
-        root.style.setProperty('--cyan', theme.cyan);
+      if (sections.length === 0) {
+        console.warn('No sections found for theming');
         return;
       }
 
-      gsap.to(root, {
-        duration: 0.6,
-        ease: 'power2.out',
-        '--bg': theme.bg,
-        '--surface': theme.surface,
-        '--ink': theme.ink,
-        '--muted': theme.muted,
-        '--line': theme.line,
-        '--accent': theme.accent,
-        '--accent-soft': theme.accentSoft,
-        '--cyan': theme.cyan,
-        onComplete: () => {
-          root.style.setProperty('--bg', theme.bg);
-          root.style.setProperty('--surface', theme.surface);
-          root.style.setProperty('--ink', theme.ink);
-          root.style.setProperty('--muted', theme.muted);
-          root.style.setProperty('--line', theme.line);
-          root.style.setProperty('--accent', theme.accent);
-          root.style.setProperty('--accent-soft', theme.accentSoft);
-          root.style.setProperty('--cyan', theme.cyan);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          // Find the section with highest visibility
+          const best = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+          if (!best) return;
+
+          const themeKey = sectionThemeMap.find(
+            (s) => s.sectionId === best.target.id
+          )?.themeKey;
+
+          if (themeKey) {
+            applyTheme(themeKey);
+          }
         },
-      });
-    };
+        {
+          rootMargin: '-30% 0px -40% 0px',
+          threshold: [0, 0.25, 0.5, 0.75, 1],
+        }
+      );
 
-    const triggers: ScrollTrigger[] = [];
+      sections.forEach((section) => observer.observe(section));
 
-    for (const section of sections) {
-      const themeKey = sectionThemeMap.find((s) => s.sectionId === section.id)?.themeKey;
-      if (!themeKey) continue;
+      // Apply initial theme
+      applyTheme('india');
 
-      const trigger = ScrollTrigger.create({
-        trigger: section,
-        start: 'top 55%',
-        end: 'bottom 45%',
-        onEnter: () => applyTheme(themeKey),
-        onEnterBack: () => applyTheme(themeKey),
-      });
+      return () => observer.disconnect();
+    }, 100);
 
-      triggers.push(trigger);
-    }
-
-    return () => {
-      triggers.forEach((t) => t.kill());
-    };
+    return () => clearTimeout(timer);
   }, [enabled]);
 
   return { activeTheme, lenisRef };
