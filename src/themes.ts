@@ -35,7 +35,7 @@ export const themes = {
     cyan: '#4ECDC4',
     sectionBg: 'linear-gradient(180deg, #3d0808 0%, #2a0606 100%)',
   },
-  // GERMANY — industrial, cool grey, precise
+  // GERMANY — industrial, light grey, precise
   germany: {
     bg: '#E8E8EA',
     surface: '#D0D0D4',
@@ -71,7 +71,7 @@ export const themes = {
     cyan: '#5AB8D9',
     sectionBg: 'linear-gradient(180deg, #F0F6FA 0%, #D6E8F2 100%)',
   },
-  // BEYOND THE CV (Switzerland alt) — same alpine palette
+  // BEYOND THE CV (Switzerland alt)
   swissBeyond: {
     bg: '#F0F6FA',
     surface: '#D6E8F2',
