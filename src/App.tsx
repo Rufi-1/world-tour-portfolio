@@ -356,7 +356,7 @@ function App() {
             <CountryModel
               url="/models/china.glb"
               label="Great Wall · China"
-              size={2}
+              size={2.4}
               height={650}
             />
           </div>
@@ -398,7 +398,7 @@ function App() {
             <CountryModel
               url="/models/germany.glb"
               label="Schwerin Castle · Germany"
-              size={1.7}
+              size={2.2}
               height={650}
             />
           </div>
@@ -605,7 +605,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/space.glb" variant="background" size={2} />
+          <CountryModel url="/models/space.glb" variant="background" size={3.5} vertical />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>

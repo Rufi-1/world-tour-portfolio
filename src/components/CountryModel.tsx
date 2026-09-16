@@ -34,9 +34,10 @@ class ModelErrorBoundary extends Component<
 type InnerProps = {
   url: string;
   size: number;
+  vertical?: boolean;
 };
 
-function ModelInner({ url, size }: InnerProps) {
+function ModelInner({ url, size, vertical = false }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -57,7 +58,12 @@ function ModelInner({ url, size }: InnerProps) {
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
-    ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
+    if (vertical) {
+      // Rotate on X-axis: galaxy spins top-to-bottom
+      ref.current.rotation.x += d * 0.08;
+    } else {
+      ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
+    }
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
     const target = hovered ? normalizedScale * 1.05 : normalizedScale;
     ref.current.scale.lerp({ x: target, y: target, z: target }, 0.1);
@@ -80,6 +86,7 @@ type Props = {
   size?: number;
   height?: number;
   variant?: 'default' | 'background' | 'side';
+  vertical?: boolean;
 };
 
 export function CountryModel({
@@ -88,6 +95,7 @@ export function CountryModel({
   size = 1,
   height = 600,
   variant = 'default',
+  vertical = false,
 }: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
@@ -114,7 +122,7 @@ export function CountryModel({
             <directionalLight position={[5, 5, 5]} intensity={2.5} />
             <directionalLight position={[-5, -5, -5]} intensity={1.2} />
             <Suspense fallback={null}>
-              <ModelInner url={url} size={size} />
+              <ModelInner url={url} size={size} vertical={vertical} />
             </Suspense>
           </Canvas>
         </div>
@@ -146,7 +154,7 @@ export function CountryModel({
             <directionalLight position={[5, 5, 5]} intensity={2.5} />
             <directionalLight position={[-5, -5, -5]} intensity={1.2} />
             <Suspense fallback={null}>
-              <ModelInner url={url} size={size} />
+              <ModelInner url={url} size={size} vertical={vertical} />
             </Suspense>
           </Canvas>
         </div>
@@ -166,7 +174,7 @@ export function CountryModel({
           <directionalLight position={[5, 5, 5]} intensity={2.5} />
           <directionalLight position={[-5, -5, -5]} intensity={1.2} />
           <Suspense fallback={null}>
-            <ModelInner url={url} size={size} />
+            <ModelInner url={url} size={size} vertical={vertical} />
           </Suspense>
         </Canvas>
         {label && (
