@@ -22,7 +22,7 @@ class ModelErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ height: 500, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
+        <div style={{ height: 600, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
           {this.props.label || 'Model unavailable'}
         </div>
       );
@@ -47,7 +47,6 @@ function ModelInner({ url, size }: InnerProps) {
     const center = box.getCenter(new Vector3());
     const sizeVec = box.getSize(new Vector3());
     const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z) || 1;
-    // Normalize to a 2-unit box, then multiply by user "size" value
     const ns = (2 / maxDim) * size;
     return {
       normalizedScale: ns,
@@ -58,7 +57,6 @@ function ModelInner({ url, size }: InnerProps) {
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
-    // Only horizontal (Y-axis) rotation
     ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
     const target = hovered ? normalizedScale * 1.05 : normalizedScale;
@@ -80,26 +78,87 @@ type Props = {
   url: string;
   label?: string;
   size?: number;
+  height?: number;
+  variant?: 'default' | 'background' | 'side';
 };
 
-export function CountryModel({ url, label, size = 1 }: Props) {
+export function CountryModel({
+  url,
+  label,
+  size = 1,
+  height = 600,
+  variant = 'default',
+}: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (prefersReducedMotion) {
     return (
-      <div style={{ height: 500, display: 'grid', placeItems: 'center', opacity: 0.5 }}>
+      <div style={{ height, display: 'grid', placeItems: 'center', opacity: 0.5 }}>
         {label}
       </div>
     );
   }
 
+  if (variant === 'background') {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+          <Canvas
+            camera={{ position: [0, 0, 3.5], fov: 50 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={2} />
+            <directionalLight position={[5, 5, 5]} intensity={2.5} />
+            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} size={size} />
+            </Suspense>
+          </Canvas>
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
+
+  if (variant === 'side') {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div
+          style={{
+            position: 'absolute',
+            right: '2%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 'min(50vw, 620px)',
+            height: 'min(50vw, 620px)',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        >
+          <Canvas
+            camera={{ position: [0, 0, 4], fov: 50 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={2} />
+            <directionalLight position={[5, 5, 5]} intensity={2.5} />
+            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} size={size} />
+            </Suspense>
+          </Canvas>
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
+
   return (
     <ModelErrorBoundary label={label}>
-      <div style={{ width: '100%', height: 500 }}>
+      <div style={{ width: '100%', height }}>
         <Canvas
-          camera={{ position: [0, 0, 3], fov: 50 }}
+          camera={{ position: [0, 0, 4], fov: 50 }}
           dpr={[1, 1.5]}
           gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
         >

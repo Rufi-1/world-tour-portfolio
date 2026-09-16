@@ -210,16 +210,23 @@ function App() {
       )}
 
       <main>
-        {/* 01 — INDIA */}
+        {/* 01 — INDIA (Taj Mahal on the right side) */}
         <ScrollSection
           id="origin"
           className="hero section-shell country-themed"
-          style={{ '--section-bg': themes.india.sectionBg } as React.CSSProperties}
+          style={
+            {
+              '--section-bg': themes.india.sectionBg,
+              position: 'relative',
+              overflow: 'hidden',
+            } as React.CSSProperties
+          }
         >
+          <CountryModel url="/models/india.glb" variant="side" size={1.5} />
           <div className="section-particles">
             <ParticleSystem theme={themes.india} active={activeTheme.key === 'india'} />
           </div>
-          <div className="hero-copy reveal">
+          <div className="hero-copy reveal" style={{ position: 'relative', zIndex: 2 }}>
             <p className="eyebrow">
               <span className="eyebrow-line" /> 01 / INDIA — ORIGIN
             </p>
@@ -245,10 +252,6 @@ function App() {
                 Mysuru, IN <Globe2 size={13} />
               </span>
             </div>
-          </div>
-
-          <div style={{ position: 'relative', zIndex: 2, marginTop: '2rem' }}>
-            <CountryModel url="/models/india.glb" label="Taj Mahal · India" size={1.5} />
           </div>
 
           <div className="scroll-cue">
@@ -277,7 +280,12 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/japan.glb" label="Torii Gate · Japan" size={1.5} />
+            <CountryModel
+              url="/models/japan.glb"
+              label="Torii Gate · Japan"
+              size={1.5}
+              height={650}
+            />
           </div>
 
           <SectionReveal>
@@ -345,7 +353,12 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/china.glb" label="Great Wall · China" size={1.5} />
+            <CountryModel
+              url="/models/china.glb"
+              label="Great Wall · China"
+              size={2}
+              height={650}
+            />
           </div>
 
           <SectionReveal>
@@ -382,7 +395,12 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/germany.glb" label="Schwerin Castle · Germany" size={1.3} />
+            <CountryModel
+              url="/models/germany.glb"
+              label="Schwerin Castle · Germany"
+              size={1.7}
+              height={650}
+            />
           </div>
 
           <SectionReveal>
@@ -453,11 +471,11 @@ function App() {
             } as React.CSSProperties
           }
         >
+          <FallingMapleLeaves active={activeTheme.key === 'canada'} />
+
           <div className="section-particles">
             <ParticleSystem theme={themes.canada} active={activeTheme.key === 'canada'} />
           </div>
-
-          <FallingMapleLeaves active={activeTheme.key === 'canada'} />
 
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div className="section-number">05</div>
@@ -476,7 +494,12 @@ function App() {
             </div>
 
             <div style={{ margin: '3rem 0' }}>
-              <CountryModel url="/models/canada.glb" label="Canada · Selected Work" size={1.3} />
+              <CountryModel
+                url="/models/canada.glb"
+                label="Canada · Selected Work"
+                size={1.3}
+                height={650}
+              />
             </div>
 
             <SectionReveal>
@@ -508,12 +531,19 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 06 — SWITZERLAND */}
+        {/* 06 — SWITZERLAND (Matterhorn on the right side, opposite of Taj Mahal) */}
         <ScrollSection
           id="beyond"
           className="closing-section section-shell country-themed"
-          style={{ '--section-bg': themes.swissBeyond.sectionBg } as React.CSSProperties}
+          style={
+            {
+              '--section-bg': themes.swissBeyond.sectionBg,
+              position: 'relative',
+              overflow: 'hidden',
+            } as React.CSSProperties
+          }
         >
+          <CountryModel url="/models/switzerland.glb" variant="side" size={1.5} />
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
@@ -527,95 +557,97 @@ function App() {
             <div className="map-dot dot-b" />
             <div className="map-dot dot-c" />
           </div>
-          <div className="section-number">06</div>
-          <p className="eyebrow">SWITZERLAND — BEYOND THE CV</p>
-          <h2>
-            Always learning.
-            <br />
-            <span>Always in motion.</span>
-          </h2>
-
-          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/switzerland.glb" label="Alpine Switzerland" size={1.3} />
-          </div>
-
-          <SectionReveal>
-            <div className="closing-columns">
-              <div>
-                <p className="large-copy">
-                  Workshops, hackathons, and self-directed learning keep my map growing.
-                </p>
-                <div className="soft-skills">
-                  <p className="soft-skills-label">SOFT SKILLS</p>
-                  {resume.softSkills.map((skill) => (
-                    <span key={skill} className="soft-skill-pill">
-                      {skill}
-                    </span>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div className="section-number">06</div>
+            <p className="eyebrow">SWITZERLAND — BEYOND THE CV</p>
+            <h2>
+              Always learning.
+              <br />
+              <span>Always in motion.</span>
+            </h2>
+            <SectionReveal>
+              <div className="closing-columns">
+                <div>
+                  <p className="large-copy">
+                    Workshops, hackathons, and self-directed learning keep my map growing.
+                  </p>
+                  <div className="soft-skills">
+                    <p className="soft-skills-label">SOFT SKILLS</p>
+                    {resume.softSkills.map((skill) => (
+                      <span key={skill} className="soft-skill-pill">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="achievement-list">
+                  {resume.achievements.map((item, index) => (
+                    <div key={item}>
+                      <span>0{index + 1}</span>
+                      <p>{item}</p>
+                    </div>
                   ))}
                 </div>
               </div>
-              <div className="achievement-list">
-                {resume.achievements.map((item, index) => (
-                  <div key={item}>
-                    <span>0{index + 1}</span>
-                    <p>{item}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </SectionReveal>
+            </SectionReveal>
+          </div>
         </ScrollSection>
 
-        {/* 07 — WORLD */}
+        {/* 07 — WORLD (space as background) */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
-          style={{ '--section-bg': themes.world.sectionBg } as React.CSSProperties}
+          style={
+            {
+              '--section-bg': themes.world.sectionBg,
+              position: 'relative',
+              overflow: 'hidden',
+            } as React.CSSProperties
+          }
         >
+          <CountryModel url="/models/space.glb" variant="background" size={2} />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>
-          <div className="section-number">07</div>
-          <div className="contact-copy">
-            <p className="eyebrow">WORLD — NEXT DESTINATION</p>
-            <h2>
-              Have a question
-              <br />
-              or a <span>good problem?</span>
-            </h2>
-            <p>
-              I'm always open to thoughtful conversations about data, AI, and opportunities to
-              build useful things.
-            </p>
-            <ContactForm />
-            <div className="contact-links">
-              <a href={`mailto:${resume.email}`}>
-                <Mail size={15} /> {resume.email}
+          <div style={{ position: 'relative', zIndex: 2, width: '100%' }}>
+            <div className="section-number">07</div>
+            <div className="contact-copy">
+              <p className="eyebrow">WORLD — NEXT DESTINATION</p>
+              <h2>
+                Have a question
+                <br />
+                or a <span>good problem?</span>
+              </h2>
+              <p>
+                I'm always open to thoughtful conversations about data, AI, and opportunities to
+                build useful things.
+              </p>
+              <ContactForm />
+              <div className="contact-links">
+                <a href={`mailto:${resume.email}`}>
+                  <Mail size={15} /> {resume.email}
+                </a>
+                <a href={`tel:${resume.phone}`}>
+                  <Phone size={15} /> {resume.phone}
+                </a>
+                <a href={resume.github} target="_blank" rel="noreferrer">
+                  <Github size={15} /> {resume.github.replace('https://', '')}
+                </a>
+                <a href={resume.linkedin} target="_blank" rel="noreferrer">
+                  <Linkedin size={15} /> LinkedIn
+                </a>
+                <span>
+                  <MapPin size={15} /> {resume.location}
+                </span>
+              </div>
+              <a
+                className="primary-button resume-download"
+                href="/RA_latest_resume.pdf"
+                download
+              >
+                <Download size={16} /> Download Resume
               </a>
-              <a href={`tel:${resume.phone}`}>
-                <Phone size={15} /> {resume.phone}
-              </a>
-              <a href={resume.github} target="_blank" rel="noreferrer">
-                <Github size={15} /> {resume.github.replace('https://', '')}
-              </a>
-              <a href={resume.linkedin} target="_blank" rel="noreferrer">
-                <Linkedin size={15} /> LinkedIn
-              </a>
-              <span>
-                <MapPin size={15} /> {resume.location}
-              </span>
             </div>
-            <a
-              className="primary-button resume-download"
-              href="/RA_latest_resume.pdf"
-              download
-            >
-              <Download size={16} /> Download Resume
-            </a>
-          </div>
-
-          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/space.glb" label="The Journey Continues" size={1.5} />
           </div>
         </ScrollSection>
       </main>
