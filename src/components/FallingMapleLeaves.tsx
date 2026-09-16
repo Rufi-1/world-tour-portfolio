@@ -10,12 +10,12 @@ export function FallingMapleLeaves({ active }: Props) {
     return Array.from({ length: 60 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 8,
-      duration: 8 + Math.random() * 8,
-      size: 8 + Math.random() * 10, // 8-18px, small
+      delay: Math.random() * 6,
+      duration: 7 + Math.random() * 6,
+      size: 8 + Math.random() * 10,
       rotateStart: Math.random() * 360,
       rotateEnd: Math.random() * 720 + 360,
-      drift: (Math.random() - 0.5) * 260,
+      drift: (Math.random() - 0.5) * 240,
     }));
   }, []);
 
@@ -35,9 +35,9 @@ export function FallingMapleLeaves({ active }: Props) {
       {leaves.map((leaf) => (
         <motion.div
           key={leaf.id}
-          initial={{ y: '-10%', x: 0, rotate: leaf.rotateStart, opacity: 0 }}
+          initial={{ top: '-10%', x: 0, rotate: leaf.rotateStart, opacity: 0 }}
           animate={{
-            y: '110%',
+            top: '110%',
             x: leaf.drift,
             rotate: leaf.rotateEnd,
             opacity: [0, 1, 1, 0],
@@ -51,7 +51,6 @@ export function FallingMapleLeaves({ active }: Props) {
           style={{
             position: 'absolute',
             left: `${leaf.left}%`,
-            top: 0,
             width: leaf.size,
             height: leaf.size,
           }}

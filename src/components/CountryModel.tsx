@@ -33,11 +33,10 @@ class ModelErrorBoundary extends Component<
 
 type InnerProps = {
   url: string;
-  zoom: number;
-  vertical?: boolean;
+  size: number;
 };
 
-function ModelInner({ url, zoom, vertical = false }: InnerProps) {
+function ModelInner({ url, size }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -46,24 +45,21 @@ function ModelInner({ url, zoom, vertical = false }: InnerProps) {
   const { normalizedScale, offset } = useMemo(() => {
     const box = new Box3().setFromObject(scene);
     const center = box.getCenter(new Vector3());
-    const size = box.getSize(new Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    // Normalize so model fits a 2-unit box, then apply user zoom
-    const ns = (2 / maxDim) * zoom;
+    const sizeVec = box.getSize(new Vector3());
+    const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z) || 1;
+    // Normalize to a 2-unit box, then multiply by user "size" value
+    const ns = (2 / maxDim) * size;
     return {
       normalizedScale: ns,
       offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [number, number, number],
     };
-  }, [scene, zoom]);
+  }, [scene, size]);
 
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
-    if (vertical) {
-      ref.current.rotation.x += d * 0.15;
-    } else {
-      ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
-    }
+    // Only horizontal (Y-axis) rotation
+    ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
     const target = hovered ? normalizedScale * 1.05 : normalizedScale;
     ref.current.scale.lerp({ x: target, y: target, z: target }, 0.1);
@@ -83,11 +79,10 @@ function ModelInner({ url, zoom, vertical = false }: InnerProps) {
 type Props = {
   url: string;
   label?: string;
-  zoom?: number;
-  variant?: 'default' | 'background';
+  size?: number;
 };
 
-export function CountryModel({ url, label, zoom = 1, variant = 'default' }: Props) {
+export function CountryModel({ url, label, size = 1 }: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,29 +95,6 @@ export function CountryModel({ url, label, zoom = 1, variant = 'default' }: Prop
     );
   }
 
-  // Background variant: full-section, no label, vertical rotation
-  if (variant === 'background') {
-    return (
-      <ModelErrorBoundary label={label}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-          <Canvas
-            camera={{ position: [0, 0, 3], fov: 50 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-          >
-            <ambientLight intensity={2} />
-            <directionalLight position={[5, 5, 5]} intensity={2.5} />
-            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-            <Suspense fallback={null}>
-              <ModelInner url={url} zoom={zoom} vertical />
-            </Suspense>
-          </Canvas>
-        </div>
-      </ModelErrorBoundary>
-    );
-  }
-
-  // Default: inline, with label
   return (
     <ModelErrorBoundary label={label}>
       <div style={{ width: '100%', height: 500 }}>
@@ -135,7 +107,7 @@ export function CountryModel({ url, label, zoom = 1, variant = 'default' }: Prop
           <directionalLight position={[5, 5, 5]} intensity={2.5} />
           <directionalLight position={[-5, -5, -5]} intensity={1.2} />
           <Suspense fallback={null}>
-            <ModelInner url={url} zoom={zoom} />
+            <ModelInner url={url} size={size} />
           </Suspense>
         </Canvas>
         {label && (

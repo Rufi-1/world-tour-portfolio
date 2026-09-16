@@ -33,7 +33,6 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-// Preload all models immediately so they appear fast when scrolled into view
 useGLTF.preload('/models/india.glb');
 useGLTF.preload('/models/japan.glb');
 useGLTF.preload('/models/china.glb');
@@ -249,7 +248,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, marginTop: '2rem' }}>
-            <CountryModel url="/models/india.glb" label="Taj Mahal · India" zoom={0.5} />
+            <CountryModel url="/models/india.glb" label="Taj Mahal · India" size={1.5} />
           </div>
 
           <div className="scroll-cue">
@@ -278,7 +277,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/japan.glb" label="Torii Gate · Japan" zoom={0.5} />
+            <CountryModel url="/models/japan.glb" label="Torii Gate · Japan" size={1.5} />
           </div>
 
           <SectionReveal>
@@ -346,7 +345,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/china.glb" label="Great Wall · China" zoom={0.9} />
+            <CountryModel url="/models/china.glb" label="Great Wall · China" size={1.5} />
           </div>
 
           <SectionReveal>
@@ -363,90 +362,86 @@ function App() {
           </SectionReveal>
         </ScrollSection>
 
-        {/* 04 — GERMANY (background model) */}
+        {/* 04 — GERMANY */}
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.germany.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.germany.sectionBg } as React.CSSProperties}
         >
-          <CountryModel url="/models/germany.glb" variant="background" zoom={1.5} />
           <div className="section-particles">
             <ParticleSystem theme={themes.germany} active={activeTheme.key === 'germany'} />
           </div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div className="section-number">04</div>
-            <div className="section-heading">
-              <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
-              <h2>
-                Precision in the
-                <br />
-                <span>details.</span>
-              </h2>
-            </div>
-            <SectionReveal>
-              <div className="journey-grid">
-                <div className="timeline-card">
-                  <div className="timeline-top">
-                    <span>EDUCATION</span>
-                    <Database size={18} />
-                  </div>
-                  {resume.education.map((item) => (
-                    <div className="timeline-item" key={item.year}>
-                      <span>{item.year}</span>
-                      <div>
-                        <h3>{item.title}</h3>
-                        <p>{item.place}</p>
-                        <b>{item.score}</b>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="experience-card">
-                  <div className="timeline-top">
-                    <span>EXPERIENCE / 01</span>
-                    <BriefcaseBusiness size={18} />
-                  </div>
-                  <div className="experience-title">
-                    <p>{resume.experience.dates}</p>
-                    <h3>{resume.experience.title}</h3>
-                    <span>
-                      {resume.experience.company} · {resume.experience.location}
-                    </span>
-                  </div>
-                  <ul>
-                    {resume.experience.points.map((point) => (
-                      <li key={point}>
-                        <Check size={15} />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="learning-strip">
-                <span>CERTIFIED / LEARNING NEXT</span>
-                <div>
-                  {resume.certifications.map((item) => (
-                    <p key={item}>{item}</p>
-                  ))}
-                  {resume.learning.map((item) => (
-                    <p key={item}>
-                      <Sparkles size={13} /> {item}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </SectionReveal>
+          <div className="section-number">04</div>
+          <div className="section-heading">
+            <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
+            <h2>
+              Precision in the
+              <br />
+              <span>details.</span>
+            </h2>
           </div>
+
+          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
+            <CountryModel url="/models/germany.glb" label="Schwerin Castle · Germany" size={1.3} />
+          </div>
+
+          <SectionReveal>
+            <div className="journey-grid">
+              <div className="timeline-card">
+                <div className="timeline-top">
+                  <span>EDUCATION</span>
+                  <Database size={18} />
+                </div>
+                {resume.education.map((item) => (
+                  <div className="timeline-item" key={item.year}>
+                    <span>{item.year}</span>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.place}</p>
+                      <b>{item.score}</b>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="experience-card">
+                <div className="timeline-top">
+                  <span>EXPERIENCE / 01</span>
+                  <BriefcaseBusiness size={18} />
+                </div>
+                <div className="experience-title">
+                  <p>{resume.experience.dates}</p>
+                  <h3>{resume.experience.title}</h3>
+                  <span>
+                    {resume.experience.company} · {resume.experience.location}
+                  </span>
+                </div>
+                <ul>
+                  {resume.experience.points.map((point) => (
+                    <li key={point}>
+                      <Check size={15} />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="learning-strip">
+              <span>CERTIFIED / LEARNING NEXT</span>
+              <div>
+                {resume.certifications.map((item) => (
+                  <p key={item}>{item}</p>
+                ))}
+                {resume.learning.map((item) => (
+                  <p key={item}>
+                    <Sparkles size={13} /> {item}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </SectionReveal>
         </ScrollSection>
 
-        {/* 05 — CANADA (background + falling leaves) */}
+        {/* 05 — CANADA */}
         <ScrollSection
           id="work"
           className="country-section canada-section section-shell country-themed"
@@ -458,8 +453,6 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/canada.glb" variant="background" zoom={1.8} />
-
           <div className="section-particles">
             <ParticleSystem theme={themes.canada} active={activeTheme.key === 'canada'} />
           </div>
@@ -480,6 +473,10 @@ function App() {
               <p className="heading-aside">
                 Technology only matters when it makes something clearer, kinder, or more possible.
               </p>
+            </div>
+
+            <div style={{ margin: '3rem 0' }}>
+              <CountryModel url="/models/canada.glb" label="Canada · Selected Work" size={1.3} />
             </div>
 
             <SectionReveal>
@@ -511,123 +508,114 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 06 — SWITZERLAND (background model) */}
+        {/* 06 — SWITZERLAND */}
         <ScrollSection
           id="beyond"
           className="closing-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.swissBeyond.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.swissBeyond.sectionBg } as React.CSSProperties}
         >
-          <CountryModel url="/models/switzerland.glb" variant="background" zoom={1.5} />
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
               active={activeTheme.key === 'swissBeyond'}
             />
           </div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div className="closing-decoration">
-              <div className="map-line line-a" />
-              <div className="map-line line-b" />
-              <div className="map-dot dot-a" />
-              <div className="map-dot dot-b" />
-              <div className="map-dot dot-c" />
-            </div>
-            <div className="section-number">06</div>
-            <p className="eyebrow">SWITZERLAND — BEYOND THE CV</p>
-            <h2>
-              Always learning.
-              <br />
-              <span>Always in motion.</span>
-            </h2>
-            <SectionReveal>
-              <div className="closing-columns">
-                <div>
-                  <p className="large-copy">
-                    Workshops, hackathons, and self-directed learning keep my map growing.
-                  </p>
-                  <div className="soft-skills">
-                    <p className="soft-skills-label">SOFT SKILLS</p>
-                    {resume.softSkills.map((skill) => (
-                      <span key={skill} className="soft-skill-pill">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="achievement-list">
-                  {resume.achievements.map((item, index) => (
-                    <div key={item}>
-                      <span>0{index + 1}</span>
-                      <p>{item}</p>
-                    </div>
+          <div className="closing-decoration">
+            <div className="map-line line-a" />
+            <div className="map-line line-b" />
+            <div className="map-dot dot-a" />
+            <div className="map-dot dot-b" />
+            <div className="map-dot dot-c" />
+          </div>
+          <div className="section-number">06</div>
+          <p className="eyebrow">SWITZERLAND — BEYOND THE CV</p>
+          <h2>
+            Always learning.
+            <br />
+            <span>Always in motion.</span>
+          </h2>
+
+          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
+            <CountryModel url="/models/switzerland.glb" label="Alpine Switzerland" size={1.3} />
+          </div>
+
+          <SectionReveal>
+            <div className="closing-columns">
+              <div>
+                <p className="large-copy">
+                  Workshops, hackathons, and self-directed learning keep my map growing.
+                </p>
+                <div className="soft-skills">
+                  <p className="soft-skills-label">SOFT SKILLS</p>
+                  {resume.softSkills.map((skill) => (
+                    <span key={skill} className="soft-skill-pill">
+                      {skill}
+                    </span>
                   ))}
                 </div>
               </div>
-            </SectionReveal>
-          </div>
+              <div className="achievement-list">
+                {resume.achievements.map((item, index) => (
+                  <div key={item}>
+                    <span>0{index + 1}</span>
+                    <p>{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </SectionReveal>
         </ScrollSection>
 
-        {/* 07 — WORLD (space background) */}
+        {/* 07 — WORLD */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.world.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.world.sectionBg } as React.CSSProperties}
         >
-          <CountryModel url="/models/space.glb" variant="background" zoom={3} />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>
-          <div style={{ position: 'relative', zIndex: 2, width: '100%' }}>
-            <div className="section-number">07</div>
-            <div className="contact-copy">
-              <p className="eyebrow">WORLD — NEXT DESTINATION</p>
-              <h2>
-                Have a question
-                <br />
-                or a <span>good problem?</span>
-              </h2>
-              <p>
-                I'm always open to thoughtful conversations about data, AI, and opportunities to
-                build useful things.
-              </p>
-              <ContactForm />
-              <div className="contact-links">
-                <a href={`mailto:${resume.email}`}>
-                  <Mail size={15} /> {resume.email}
-                </a>
-                <a href={`tel:${resume.phone}`}>
-                  <Phone size={15} /> {resume.phone}
-                </a>
-                <a href={resume.github} target="_blank" rel="noreferrer">
-                  <Github size={15} /> {resume.github.replace('https://', '')}
-                </a>
-                <a href={resume.linkedin} target="_blank" rel="noreferrer">
-                  <Linkedin size={15} /> LinkedIn
-                </a>
-                <span>
-                  <MapPin size={15} /> {resume.location}
-                </span>
-              </div>
-              <a
-                className="primary-button resume-download"
-                href="/RA_latest_resume.pdf"
-                download
-              >
-                <Download size={16} /> Download Resume
+          <div className="section-number">07</div>
+          <div className="contact-copy">
+            <p className="eyebrow">WORLD — NEXT DESTINATION</p>
+            <h2>
+              Have a question
+              <br />
+              or a <span>good problem?</span>
+            </h2>
+            <p>
+              I'm always open to thoughtful conversations about data, AI, and opportunities to
+              build useful things.
+            </p>
+            <ContactForm />
+            <div className="contact-links">
+              <a href={`mailto:${resume.email}`}>
+                <Mail size={15} /> {resume.email}
               </a>
+              <a href={`tel:${resume.phone}`}>
+                <Phone size={15} /> {resume.phone}
+              </a>
+              <a href={resume.github} target="_blank" rel="noreferrer">
+                <Github size={15} /> {resume.github.replace('https://', '')}
+              </a>
+              <a href={resume.linkedin} target="_blank" rel="noreferrer">
+                <Linkedin size={15} /> LinkedIn
+              </a>
+              <span>
+                <MapPin size={15} /> {resume.location}
+              </span>
             </div>
+            <a
+              className="primary-button resume-download"
+              href="/RA_latest_resume.pdf"
+              download
+            >
+              <Download size={16} /> Download Resume
+            </a>
+          </div>
+
+          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
+            <CountryModel url="/models/space.glb" label="The Journey Continues" size={1.5} />
           </div>
         </ScrollSection>
       </main>
