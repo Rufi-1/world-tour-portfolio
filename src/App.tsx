@@ -20,7 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useGLTF } from '@react-three/drei';
+
 import { resume } from '@/data/resume';
 import type { SymbolKind } from '@/components/CountrySymbol';
 import ContactForm from '@/components/ContactForm';
@@ -33,14 +33,7 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-useGLTF.preload('/models/india.glb');
-useGLTF.preload('/models/japan.glb');
-useGLTF.preload('/models/china.glb');
-useGLTF.preload('/models/germany.glb');
-useGLTF.preload('/models/canada.glb');
-useGLTF.preload('/models/switzerland.glb');
-useGLTF.preload('/models/maple_leaf.glb');
-useGLTF.preload('/models/space.glb');
+
 
 const CountrySymbol = lazy(() => import('@/components/CountrySymbol'));
 
@@ -396,11 +389,12 @@ function App() {
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
             <CountryModel
-              url="/models/germany.glb"
-              label="Schwerin Castle · Germany"
-              size={3.2}
-              height={650}
-            />
+  url="/models/germany.glb"
+  label="Schwerin Castle · Germany"
+  size={3.7}
+  height={650}
+  tiltX={0.35}
+/>
           </div>
 
           <SectionReveal>
@@ -605,7 +599,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/space.glb" variant="background" size={3.5} vertical />
+          <CountryModel url="/models/space.glb" variant="background" size={3.8} vertical />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>

@@ -1,4 +1,12 @@
-import { Component, useRef, useState, Suspense, useMemo, type ReactNode } from 'react';
+import {
+  Component,
+  useRef,
+  useState,
+  Suspense,
+  useMemo,
+  useEffect,
+  type ReactNode,
+} from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
@@ -35,9 +43,10 @@ type InnerProps = {
   url: string;
   size: number;
   vertical?: boolean;
+  tiltX?: number;
 };
 
-function ModelInner({ url, size, vertical = false }: InnerProps) {
+function ModelInner({ url, size, vertical = false, tiltX = 0 }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -59,7 +68,6 @@ function ModelInner({ url, size, vertical = false }: InnerProps) {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
     if (vertical) {
-      // Rotate on X-axis: galaxy spins top-to-bottom
       ref.current.rotation.x += d * 0.08;
     } else {
       ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
@@ -74,6 +82,7 @@ function ModelInner({ url, size, vertical = false }: InnerProps) {
       ref={ref}
       object={scene}
       position={offset}
+      rotation={[tiltX, 0, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     />
@@ -87,6 +96,8 @@ type Props = {
   height?: number;
   variant?: 'default' | 'background' | 'side';
   vertical?: boolean;
+  /** Vertical tilt in radians. Try 0.2 to 0.6 for a subtle lean */
+  tiltX?: number;
 };
 
 export function CountryModel({
@@ -96,10 +107,32 @@ export function CountryModel({
   height = 600,
   variant = 'default',
   vertical = false,
+  tiltX = 0,
 }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasEverBeenVisible, setHasEverBeenVisible] = useState(false);
+
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Only render the canvas when the model is in or near the viewport
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) setHasEverBeenVisible(true);
+      },
+      { rootMargin: '300px 0px', threshold: 0.01 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   if (prefersReducedMotion) {
     return (
@@ -109,42 +142,77 @@ export function CountryModel({
     );
   }
 
+  // Don't load the model at all until it's been near the viewport
+  const shouldRender = hasEverBeenVisible && isVisible;
+
+  // Background variant
   if (variant === 'background') {
     return (
-      <ModelErrorBoundary label={label}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-          <Canvas
-            camera={{ position: [0, 0, 3.5], fov: 50 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-          >
-            <ambientLight intensity={2} />
-            <directionalLight position={[5, 5, 5]} intensity={2.5} />
-            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-            <Suspense fallback={null}>
-              <ModelInner url={url} size={size} vertical={vertical} />
-            </Suspense>
-          </Canvas>
-        </div>
-      </ModelErrorBoundary>
+      <div
+        ref={containerRef}
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}
+      >
+        {shouldRender ? (
+          <ModelErrorBoundary label={label}>
+            <Canvas
+              camera={{ position: [0, 0, 3.5], fov: 50 }}
+              dpr={[1, 1.5]}
+              gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+            >
+              <ambientLight intensity={2} />
+              <directionalLight position={[5, 5, 5]} intensity={2.5} />
+              <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+              <Suspense fallback={null}>
+                <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
+              </Suspense>
+            </Canvas>
+          </ModelErrorBoundary>
+        ) : null}
+      </div>
     );
   }
 
+  // Side variant
   if (variant === 'side') {
     return (
-      <ModelErrorBoundary label={label}>
-        <div
-          style={{
-            position: 'absolute',
-            right: '2%',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: 'min(50vw, 620px)',
-            height: 'min(50vw, 620px)',
-            pointerEvents: 'none',
-            zIndex: 1,
-          }}
-        >
+      <div
+        ref={containerRef}
+        style={{
+          position: 'absolute',
+          right: '2%',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: 'min(50vw, 620px)',
+          height: 'min(50vw, 620px)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      >
+        {shouldRender ? (
+          <ModelErrorBoundary label={label}>
+            <Canvas
+              camera={{ position: [0, 0, 4], fov: 50 }}
+              dpr={[1, 1.5]}
+              gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+            >
+              <ambientLight intensity={2} />
+              <directionalLight position={[5, 5, 5]} intensity={2.5} />
+              <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+              <Suspense fallback={null}>
+                <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
+              </Suspense>
+            </Canvas>
+          </ModelErrorBoundary>
+        ) : null}
+      </div>
+    );
+  }
+
+  // Default inline variant
+  return (
+    <div ref={containerRef} style={{ width: '100%', height }}>
+      {shouldRender ? (
+        <ModelErrorBoundary label={label}>
           <Canvas
             camera={{ position: [0, 0, 4], fov: 50 }}
             dpr={[1, 1.5]}
@@ -154,35 +222,16 @@ export function CountryModel({
             <directionalLight position={[5, 5, 5]} intensity={2.5} />
             <directionalLight position={[-5, -5, -5]} intensity={1.2} />
             <Suspense fallback={null}>
-              <ModelInner url={url} size={size} vertical={vertical} />
+              <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
             </Suspense>
           </Canvas>
-        </div>
-      </ModelErrorBoundary>
-    );
-  }
-
-  return (
-    <ModelErrorBoundary label={label}>
-      <div style={{ width: '100%', height }}>
-        <Canvas
-          camera={{ position: [0, 0, 4], fov: 50 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-        >
-          <ambientLight intensity={2} />
-          <directionalLight position={[5, 5, 5]} intensity={2.5} />
-          <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-          <Suspense fallback={null}>
-            <ModelInner url={url} size={size} vertical={vertical} />
-          </Suspense>
-        </Canvas>
-        {label && (
-          <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
-            {label}
-          </p>
-        )}
-      </div>
-    </ModelErrorBoundary>
+        </ModelErrorBoundary>
+      ) : null}
+      {label && (
+        <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
+          {label}
+        </p>
+      )}
+    </div>
   );
 }
