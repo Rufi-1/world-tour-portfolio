@@ -1,9 +1,14 @@
-import { Component, useRef, useState, Suspense, type ReactNode } from 'react';
+import { Component, useRef, useState, Suspense, useMemo, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
-import type { Group } from 'three';
+import { Box3, Vector3, type Group } from 'three';
 
-class ModelErrorBoundary extends Component<{ children: ReactNode; label?: string }, { hasError: boolean }> {
+useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+
+class ModelErrorBoundary extends Component<
+  { children: ReactNode; label?: string },
+  { hasError: boolean }
+> {
   constructor(props: { children: ReactNode; label?: string }) {
     super(props);
     this.state = { hasError: false };
@@ -49,12 +54,24 @@ function ModelInner({ url, scale }: ModelInnerProps) {
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
 
+  const { normalizedScale, offset } = useMemo(() => {
+    const box = new Box3().setFromObject(scene);
+    const center = box.getCenter(new Vector3());
+    const size = box.getSize(new Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    const ns = (2 / maxDim) * scale;
+    return {
+      normalizedScale: ns,
+      offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [number, number, number],
+    };
+  }, [scene, scale]);
+
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
     ref.current.rotation.y += d * (hovered ? 0.8 : 0.15);
-    ref.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
-    const target = hovered ? scale * 1.1 : scale;
+    ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.1;
+    const target = hovered ? normalizedScale * 1.1 : normalizedScale;
     ref.current.scale.lerp({ x: target, y: target, z: target }, 0.1);
   });
 
@@ -62,7 +79,7 @@ function ModelInner({ url, scale }: ModelInnerProps) {
     <primitive
       ref={ref}
       object={scene}
-      scale={scale}
+      position={offset}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     />
