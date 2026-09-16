@@ -27,7 +27,7 @@ class ModelErrorBoundary extends Component<
       return (
         <div
           style={{
-            height: 400,
+            height: 550,
             display: 'grid',
             placeItems: 'center',
             opacity: 0.35,
@@ -46,9 +46,11 @@ class ModelErrorBoundary extends Component<
 type ModelInnerProps = {
   url: string;
   scale: number;
+  rotationSpeed: number;
+  vertical?: boolean;
 };
 
-function ModelInner({ url, scale }: ModelInnerProps) {
+function ModelInner({ url, scale, rotationSpeed, vertical = false }: ModelInnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -69,9 +71,13 @@ function ModelInner({ url, scale }: ModelInnerProps) {
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
-    ref.current.rotation.y += d * (hovered ? 0.8 : 0.15);
+    if (vertical) {
+      ref.current.rotation.x += d * rotationSpeed;
+    } else {
+      ref.current.rotation.y += d * (hovered ? rotationSpeed * 3 : rotationSpeed);
+    }
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.1;
-    const target = hovered ? normalizedScale * 1.1 : normalizedScale;
+    const target = hovered ? normalizedScale * 1.05 : normalizedScale;
     ref.current.scale.lerp({ x: target, y: target, z: target }, 0.1);
   });
 
@@ -90,25 +96,73 @@ type Props = {
   url: string;
   label?: string;
   scale?: number;
+  rotationSpeed?: number;
+  variant?: 'default' | 'background' | 'vertical';
 };
 
-export function CountryModel({ url, label, scale = 1 }: Props) {
+export function CountryModel({
+  url,
+  label,
+  scale = 1,
+  rotationSpeed = 0.15,
+  variant = 'default',
+}: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (prefersReducedMotion) {
     return (
-      <div
-        style={{
-          height: 400,
-          display: 'grid',
-          placeItems: 'center',
-          opacity: 0.5,
-        }}
-      >
+      <div style={{ height: 550, display: 'grid', placeItems: 'center', opacity: 0.5 }}>
         {label}
       </div>
+    );
+  }
+
+  if (variant === 'background') {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+          <Canvas
+            camera={{ position: [0, 0, 3], fov: 45 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[5, 5, 5]} intensity={2} />
+            <directionalLight position={[-5, -5, -5]} intensity={0.8} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} scale={scale} rotationSpeed={rotationSpeed} vertical />
+            </Suspense>
+          </Canvas>
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
+
+  if (variant === 'vertical') {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div style={{ width: '100%', height: 550 }}>
+          <Canvas
+            camera={{ position: [0, 0, 3], fov: 45 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[5, 5, 5]} intensity={2} />
+            <directionalLight position={[-5, -5, -5]} intensity={0.8} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} scale={scale} rotationSpeed={rotationSpeed} vertical />
+            </Suspense>
+          </Canvas>
+          {label && (
+            <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.6 }}>
+              {label}
+            </p>
+          )}
+        </div>
+      </ModelErrorBoundary>
     );
   }
 
@@ -118,18 +172,13 @@ export function CountryModel({ url, label, scale = 1 }: Props) {
         <Canvas
           camera={{ position: [0, 0, 3], fov: 45 }}
           dpr={[1, 1.5]}
-          gl={{
-            powerPreference: 'default',
-            antialias: false,
-            alpha: true,
-            preserveDrawingBuffer: false,
-          }}
+          gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
         >
           <ambientLight intensity={1.5} />
           <directionalLight position={[5, 5, 5]} intensity={2} />
           <directionalLight position={[-5, -5, -5]} intensity={0.8} />
           <Suspense fallback={null}>
-            <ModelInner url={url} scale={scale} />
+            <ModelInner url={url} scale={scale} rotationSpeed={rotationSpeed} />
           </Suspense>
         </Canvas>
         {label && (

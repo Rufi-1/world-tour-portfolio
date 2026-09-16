@@ -13,7 +13,6 @@ export function useScrollController(enabled: boolean) {
   const lenisRef = useRef<Lenis | null>(null);
   const currentThemeRef = useRef<string>('india');
 
-  // Lenis smooth scroll
   useEffect(() => {
     if (!enabled) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -39,7 +38,6 @@ export function useScrollController(enabled: boolean) {
     };
   }, [enabled]);
 
-  // Theme switching
   useEffect(() => {
     if (!enabled) return;
 
@@ -47,17 +45,13 @@ export function useScrollController(enabled: boolean) {
       if (themeKey === currentThemeRef.current) return;
 
       const theme = themes[themeKey as keyof typeof themes];
-      if (!theme) {
-        console.warn('❌ Theme not found:', themeKey);
-        return;
-      }
+      if (!theme) return;
 
       console.log('🎨 THEME SWITCH:', themeKey, '→ bg:', theme.bg);
 
       currentThemeRef.current = themeKey;
       setActiveTheme({ key: themeKey, theme });
 
-      // Apply to <html>, <body>, and .app-shell
       const targets = [
         document.documentElement,
         document.body,
@@ -77,41 +71,37 @@ export function useScrollController(enabled: boolean) {
       });
     };
 
-    // Wait for DOM then observe sections
     const timer = setTimeout(() => {
       const sections = sectionThemeMap
         .map(({ sectionId }) => document.getElementById(sectionId))
         .filter(Boolean) as HTMLElement[];
 
-      console.log(
-        '🎨 Theming observer — sections found:',
-        sections.map((s) => s.id)
-      );
-
       if (sections.length === 0) {
-        console.warn('❌ NO sections found. Section IDs:', sectionThemeMap.map((s) => s.sectionId));
+        console.warn('❌ No sections found for theming');
         return;
       }
 
       const observer = new IntersectionObserver(
-  (entries) => {
-    // Pick the section whose top is closest to the viewport top but still visible
-    const visible = entries
-      .filter((e) => e.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-    if (!visible) return;
-    const themeKey = sectionThemeMap.find((s) => s.sectionId === visible.target.id)?.themeKey;
-    if (themeKey) applyTheme(themeKey);
-  },
-  {
-    rootMargin: '-10% 0px -60% 0px',
-    threshold: [0, 0.1, 0.5],
-  }
-);
+        (entries) => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+
+          if (!visible) return;
+
+          const themeKey = sectionThemeMap.find(
+            (s) => s.sectionId === visible.target.id
+          )?.themeKey;
+
+          if (themeKey) applyTheme(themeKey);
+        },
+        {
+          rootMargin: '-10% 0px -60% 0px',
+          threshold: [0, 0.1, 0.5],
+        }
+      );
 
       sections.forEach((section) => observer.observe(section));
-
-      // Initial theme
       applyTheme('india');
 
       return () => observer.disconnect();

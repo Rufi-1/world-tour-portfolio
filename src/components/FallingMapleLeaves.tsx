@@ -23,14 +23,14 @@ export function FallingMapleLeaves({ active }: Props) {
   }, [mouseX, mouseY]);
 
   const leaves = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
+    return Array.from({ length: 40 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 5,
-      duration: 8 + Math.random() * 6,
-      size: 18 + Math.random() * 24,
+      delay: Math.random() * 6,
+      duration: 10 + Math.random() * 8,
+      size: 10 + Math.random() * 12,
       rotateStart: Math.random() * 360,
-      drift: (Math.random() - 0.5) * 200,
+      drift: (Math.random() - 0.5) * 220,
     }));
   }, []);
 
