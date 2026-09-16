@@ -33,7 +33,7 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-// Preload all models immediately
+// Preload all models immediately so they appear fast when scrolled into view
 useGLTF.preload('/models/india.glb');
 useGLTF.preload('/models/japan.glb');
 useGLTF.preload('/models/china.glb');
@@ -249,7 +249,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, marginTop: '2rem' }}>
-            <CountryModel url="/models/india.glb" label="Taj Mahal · India" scale={0.7} />
+            <CountryModel url="/models/india.glb" label="Taj Mahal · India" zoom={0.5} />
           </div>
 
           <div className="scroll-cue">
@@ -278,7 +278,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/japan.glb" label="Torii Gate · Japan" scale={0.7} />
+            <CountryModel url="/models/japan.glb" label="Torii Gate · Japan" zoom={0.5} />
           </div>
 
           <SectionReveal>
@@ -346,7 +346,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel url="/models/china.glb" label="Great Wall · China" scale={0.7} />
+            <CountryModel url="/models/china.glb" label="Great Wall · China" zoom={0.9} />
           </div>
 
           <SectionReveal>
@@ -375,12 +375,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel
-            url="/models/germany.glb"
-            variant="background"
-            scale={5}
-            rotationSpeed={0.03}
-          />
+          <CountryModel url="/models/germany.glb" variant="background" zoom={1.5} />
           <div className="section-particles">
             <ParticleSystem theme={themes.germany} active={activeTheme.key === 'germany'} />
           </div>
@@ -451,7 +446,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 05 — CANADA */}
+        {/* 05 — CANADA (background + falling leaves) */}
         <ScrollSection
           id="work"
           className="country-section canada-section section-shell country-themed"
@@ -463,12 +458,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel
-            url="/models/canada.glb"
-            variant="background"
-            scale={3}
-            rotationSpeed={0.03}
-          />
+          <CountryModel url="/models/canada.glb" variant="background" zoom={1.8} />
 
           <div className="section-particles">
             <ParticleSystem theme={themes.canada} active={activeTheme.key === 'canada'} />
@@ -518,14 +508,6 @@ function App() {
                 ))}
               </div>
             </SectionReveal>
-
-            <div style={{ marginTop: '2rem' }}>
-              <CountryModel
-                url="/models/maple_leaf.glb"
-                label="Maple Leaf · Canada"
-                scale={1.4}
-              />
-            </div>
           </div>
         </ScrollSection>
 
@@ -541,12 +523,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel
-            url="/models/switzerland.glb"
-            variant="background"
-            scale={3}
-            rotationSpeed={0.03}
-          />
+          <CountryModel url="/models/switzerland.glb" variant="background" zoom={1.5} />
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
@@ -608,12 +585,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel
-            url="/models/space.glb"
-            variant="background"
-            scale={5}
-            rotationSpeed={0.05}
-          />
+          <CountryModel url="/models/space.glb" variant="background" zoom={3} />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>

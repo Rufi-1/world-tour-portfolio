@@ -1,36 +1,21 @@
-import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 type Props = {
   active: boolean;
 };
 
 export function FallingMapleLeaves({ active }: Props) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 });
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const x = e.clientX / window.innerWidth - 0.5;
-      const y = e.clientY / window.innerHeight - 0.5;
-      mouseX.set(x * 100);
-      mouseY.set(y * 100);
-    };
-    window.addEventListener('mousemove', handler);
-    return () => window.removeEventListener('mousemove', handler);
-  }, [mouseX, mouseY]);
-
   const leaves = useMemo(() => {
-    return Array.from({ length: 40 }, (_, i) => ({
+    return Array.from({ length: 60 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 6,
-      duration: 10 + Math.random() * 8,
-      size: 10 + Math.random() * 12,
+      delay: Math.random() * 8,
+      duration: 8 + Math.random() * 8,
+      size: 8 + Math.random() * 10, // 8-18px, small
       rotateStart: Math.random() * 360,
-      drift: (Math.random() - 0.5) * 220,
+      rotateEnd: Math.random() * 720 + 360,
+      drift: (Math.random() - 0.5) * 260,
     }));
   }, []);
 
@@ -50,11 +35,11 @@ export function FallingMapleLeaves({ active }: Props) {
       {leaves.map((leaf) => (
         <motion.div
           key={leaf.id}
-          initial={{ y: -100, x: 0, rotate: leaf.rotateStart, opacity: 0 }}
+          initial={{ y: '-10%', x: 0, rotate: leaf.rotateStart, opacity: 0 }}
           animate={{
-            y: '110vh',
+            y: '110%',
             x: leaf.drift,
-            rotate: leaf.rotateStart + 720,
+            rotate: leaf.rotateEnd,
             opacity: [0, 1, 1, 0],
           }}
           transition={{
@@ -69,8 +54,6 @@ export function FallingMapleLeaves({ active }: Props) {
             top: 0,
             width: leaf.size,
             height: leaf.size,
-            x: smoothX,
-            y: smoothY,
           }}
         >
           <svg viewBox="0 0 100 100" width="100%" height="100%">

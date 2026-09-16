@@ -13,6 +13,7 @@ export function useScrollController(enabled: boolean) {
   const lenisRef = useRef<Lenis | null>(null);
   const currentThemeRef = useRef<string>('india');
 
+  // Lenis smooth scroll
   useEffect(() => {
     if (!enabled) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -38,38 +39,47 @@ export function useScrollController(enabled: boolean) {
     };
   }, [enabled]);
 
+  // Apply a theme by key — sets CSS variables on html, body, and .app-shell
+  const applyTheme = (themeKey: string, force = false) => {
+    if (!force && themeKey === currentThemeRef.current) return;
+
+    const theme = themes[themeKey as keyof typeof themes];
+    if (!theme) return;
+
+    console.log('🎨 THEME:', themeKey, '→', theme.bg);
+
+    currentThemeRef.current = themeKey;
+    setActiveTheme({ key: themeKey, theme });
+
+    const targets = [
+      document.documentElement,
+      document.body,
+      document.querySelector('.app-shell'),
+    ].filter(Boolean) as HTMLElement[];
+
+    targets.forEach((el) => {
+      el.style.setProperty('--bg', theme.bg);
+      el.style.setProperty('--surface', theme.surface);
+      el.style.setProperty('--ink', theme.ink);
+      el.style.setProperty('--muted', theme.muted);
+      el.style.setProperty('--line', theme.line);
+      el.style.setProperty('--accent', theme.accent);
+      el.style.setProperty('--accent-soft', theme.accentSoft);
+      el.style.setProperty('--cyan', theme.cyan);
+      el.style.setProperty('--section-bg', theme.sectionBg);
+    });
+  };
+
+  // Apply India theme IMMEDIATELY on mount (fixes the grey flash on load)
   useEffect(() => {
     if (!enabled) return;
+    applyTheme('india', true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled]);
 
-    const applyTheme = (themeKey: string) => {
-      if (themeKey === currentThemeRef.current) return;
-
-      const theme = themes[themeKey as keyof typeof themes];
-      if (!theme) return;
-
-      console.log('🎨 THEME SWITCH:', themeKey, '→ bg:', theme.bg);
-
-      currentThemeRef.current = themeKey;
-      setActiveTheme({ key: themeKey, theme });
-
-      const targets = [
-        document.documentElement,
-        document.body,
-        document.querySelector('.app-shell'),
-      ].filter(Boolean) as HTMLElement[];
-
-      targets.forEach((el) => {
-        el.style.setProperty('--bg', theme.bg);
-        el.style.setProperty('--surface', theme.surface);
-        el.style.setProperty('--ink', theme.ink);
-        el.style.setProperty('--muted', theme.muted);
-        el.style.setProperty('--line', theme.line);
-        el.style.setProperty('--accent', theme.accent);
-        el.style.setProperty('--accent-soft', theme.accentSoft);
-        el.style.setProperty('--cyan', theme.cyan);
-        el.style.setProperty('--section-bg', theme.sectionBg);
-      });
-    };
+  // Set up the IntersectionObserver for theme switching
+  useEffect(() => {
+    if (!enabled) return;
 
     const timer = setTimeout(() => {
       const sections = sectionThemeMap
@@ -81,8 +91,14 @@ export function useScrollController(enabled: boolean) {
         return;
       }
 
+      console.log(
+        '🎨 Observer ready — sections:',
+        sections.map((s) => s.id)
+      );
+
       const observer = new IntersectionObserver(
         (entries) => {
+          // Pick the section whose top is closest to the top of the viewport
           const visible = entries
             .filter((e) => e.isIntersecting)
             .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
@@ -102,10 +118,9 @@ export function useScrollController(enabled: boolean) {
       );
 
       sections.forEach((section) => observer.observe(section));
-      applyTheme('india');
 
       return () => observer.disconnect();
-    }, 200);
+    }, 150);
 
     return () => clearTimeout(timer);
   }, [enabled]);
