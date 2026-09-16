@@ -398,7 +398,7 @@ function App() {
             <CountryModel
               url="/models/germany.glb"
               label="Schwerin Castle · Germany"
-              size={2.2}
+              size={3.2}
               height={650}
             />
           </div>
