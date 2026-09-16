@@ -94,25 +94,20 @@ export function useScrollController(enabled: boolean) {
       }
 
       const observer = new IntersectionObserver(
-        (entries) => {
-          // Find the most-visible section
-          const visible = entries
-            .filter((e) => e.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-          if (!visible) return;
-
-          const themeKey = sectionThemeMap.find(
-            (s) => s.sectionId === visible.target.id
-          )?.themeKey;
-
-          if (themeKey) applyTheme(themeKey);
-        },
-        {
-          rootMargin: '-25% 0px -45% 0px',
-          threshold: [0, 0.25, 0.5, 0.75, 1],
-        }
-      );
+  (entries) => {
+    // Pick the section whose top is closest to the viewport top but still visible
+    const visible = entries
+      .filter((e) => e.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    if (!visible) return;
+    const themeKey = sectionThemeMap.find((s) => s.sectionId === visible.target.id)?.themeKey;
+    if (themeKey) applyTheme(themeKey);
+  },
+  {
+    rootMargin: '-10% 0px -60% 0px',
+    threshold: [0, 0.1, 0.5],
+  }
+);
 
       sections.forEach((section) => observer.observe(section));
 

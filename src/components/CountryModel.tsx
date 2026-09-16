@@ -59,7 +59,7 @@ function ModelInner({ url, scale }: ModelInnerProps) {
     const center = box.getCenter(new Vector3());
     const size = box.getSize(new Vector3());
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const ns = (2 / maxDim) * scale;
+    const ns = (3.5 / maxDim) * scale;
     return {
       normalizedScale: ns,
       offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [number, number, number],
@@ -114,7 +114,7 @@ export function CountryModel({ url, label, scale = 1 }: Props) {
 
   return (
     <ModelErrorBoundary label={label}>
-      <div style={{ width: '100%', height: 400 }}>
+      <div style={{ width: '100%', height: 550 }}>
         <Canvas
           camera={{ position: [0, 0, 3], fov: 45 }}
           dpr={[1, 1.5]}
