@@ -9,7 +9,7 @@ type ScrollSectionProps = {
 
 export default function ScrollSection({ id, className, children, style }: ScrollSectionProps) {
   return (
-    <section id={id} className={`page-section ${className}`} style={style}>
+    <section id={id} className={className} style={style}>
       {children}
     </section>
   );
