@@ -189,3 +189,113 @@ html.lenis {
     padding: 100px 0 40px !important;
   }
 }
+
+
+/* ============================================ */
+/* FULL-SCREEN PAGE MODE                         */
+/* Each section becomes exactly one viewport tall*/
+/* ============================================ */
+
+/* Make the html/body a snap container */
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: auto;
+}
+
+/* Every page section is exactly one viewport */
+.page-section {
+  min-height: 100vh;
+  height: auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 0 !important;
+}
+
+/* Reduce padding on smaller screens */
+@media (max-width: 800px) {
+  .page-section {
+    padding: 80px 0 !important;
+    min-height: 100vh;
+  }
+}
+
+@media (max-width: 500px) {
+  .page-section {
+    padding: 60px 0 !important;
+  }
+}
+
+/* Override the previous section padding rules */
+.country-section,
+.journey-section,
+.closing-section,
+.contact-section,
+.hero {
+  padding-top: 100px !important;
+  padding-bottom: 100px !important;
+}
+
+@media (max-width: 800px) {
+  .country-section,
+  .journey-section,
+  .closing-section,
+  .contact-section,
+  .hero {
+    padding-top: 80px !important;
+    padding-bottom: 80px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .country-section,
+  .journey-section,
+  .closing-section,
+  .contact-section,
+  .hero {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+}
+
+/* Tighten the space inside sections — reduce gap between heading and model */
+.page-section .section-heading {
+  margin-bottom: 24px !important;
+}
+
+.page-section canvas {
+  max-height: 55vh !important;
+}
+
+/* Reduce internal margins that were making content sit too high/low */
+.page-section .about-layout,
+.page-section .journey-grid,
+.page-section .skills-grid,
+.page-section .projects-list,
+.page-section .closing-columns,
+.page-section .learning-strip,
+.page-section .hero-copy {
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Hero needs a bit more room for the big headline */
+.page-section.hero {
+  justify-content: center;
+}
+
+/* Lenis needs the snap to keep working */
+html.lenis {
+  scroll-snap-type: y mandatory;
+}
+
+/* Disable snapping if the user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-snap-type: none !important;
+  }
+}
