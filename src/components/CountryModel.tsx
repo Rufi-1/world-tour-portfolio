@@ -67,14 +67,24 @@ function ModelInner({ url, size, vertical = false, tiltX = 0 }: InnerProps) {
   useFrame((state, delta) => {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
+
+    // Rotation: normal when idle, faster when hovered
+    const speed = hovered ? 0.45 : 0.12;
     if (vertical) {
-      ref.current.rotation.x += d * 0.08;
+      ref.current.rotation.x += d * speed;
     } else {
-      ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
+      ref.current.rotation.y += d * speed;
     }
+
+    // Gentle floating
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
-    const target = hovered ? normalizedScale * 1.05 : normalizedScale;
-    ref.current.scale.lerp({ x: target, y: target, z: target }, 0.1);
+
+    // Scale: back to base when not hovered, slightly larger when hovered
+    const targetScale = hovered ? normalizedScale * 1.05 : normalizedScale;
+    ref.current.scale.lerp(
+      { x: targetScale, y: targetScale, z: targetScale },
+      0.15
+    );
   });
 
   return (
@@ -96,7 +106,6 @@ type Props = {
   height?: number;
   variant?: 'default' | 'background' | 'side';
   vertical?: boolean;
-  /** Vertical tilt in radians. Try 0.2 to 0.6 for a subtle lean */
   tiltX?: number;
 };
 
@@ -117,7 +126,6 @@ export function CountryModel({
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Only render the canvas when the model is in or near the viewport
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -127,7 +135,7 @@ export function CountryModel({
         setIsVisible(entry.isIntersecting);
         if (entry.isIntersecting) setHasEverBeenVisible(true);
       },
-      { rootMargin: '300px 0px', threshold: 0.01 }
+      { rootMargin: '200px 0px', threshold: 0.01 }
     );
 
     observer.observe(el);
@@ -142,7 +150,6 @@ export function CountryModel({
     );
   }
 
-  // Don't load the model at all until it's been near the viewport
   const shouldRender = hasEverBeenVisible && isVisible;
 
   // Background variant
@@ -152,7 +159,7 @@ export function CountryModel({
         ref={containerRef}
         style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}
       >
-        {shouldRender ? (
+        {shouldRender && (
           <ModelErrorBoundary label={label}>
             <Canvas
               camera={{ position: [0, 0, 3.5], fov: 50 }}
@@ -167,7 +174,7 @@ export function CountryModel({
               </Suspense>
             </Canvas>
           </ModelErrorBoundary>
-        ) : null}
+        )}
       </div>
     );
   }
@@ -188,7 +195,7 @@ export function CountryModel({
           zIndex: 1,
         }}
       >
-        {shouldRender ? (
+        {shouldRender && (
           <ModelErrorBoundary label={label}>
             <Canvas
               camera={{ position: [0, 0, 4], fov: 50 }}
@@ -203,15 +210,15 @@ export function CountryModel({
               </Suspense>
             </Canvas>
           </ModelErrorBoundary>
-        ) : null}
+        )}
       </div>
     );
   }
 
-  // Default inline variant
+  // Default inline
   return (
     <div ref={containerRef} style={{ width: '100%', height }}>
-      {shouldRender ? (
+      {shouldRender && (
         <ModelErrorBoundary label={label}>
           <Canvas
             camera={{ position: [0, 0, 4], fov: 50 }}
@@ -226,7 +233,7 @@ export function CountryModel({
             </Suspense>
           </Canvas>
         </ModelErrorBoundary>
-      ) : null}
+      )}
       {label && (
         <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
           {label}

@@ -13,7 +13,6 @@ export function useScrollController(enabled: boolean) {
   const lenisRef = useRef<Lenis | null>(null);
   const currentThemeRef = useRef<string>('india');
 
-  // Lenis smooth scroll
   useEffect(() => {
     if (!enabled) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -39,14 +38,11 @@ export function useScrollController(enabled: boolean) {
     };
   }, [enabled]);
 
-  // Apply a theme by key — sets CSS variables on html, body, and .app-shell
   const applyTheme = (themeKey: string, force = false) => {
     if (!force && themeKey === currentThemeRef.current) return;
 
     const theme = themes[themeKey as keyof typeof themes];
     if (!theme) return;
-
-    console.log('🎨 THEME:', themeKey, '→', theme.bg);
 
     currentThemeRef.current = themeKey;
     setActiveTheme({ key: themeKey, theme });
@@ -70,14 +66,11 @@ export function useScrollController(enabled: boolean) {
     });
   };
 
-  // Apply India theme IMMEDIATELY on mount (fixes the grey flash on load)
   useEffect(() => {
     if (!enabled) return;
     applyTheme('india', true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
 
-  // Set up the IntersectionObserver for theme switching
   useEffect(() => {
     if (!enabled) return;
 
@@ -86,22 +79,17 @@ export function useScrollController(enabled: boolean) {
         .map(({ sectionId }) => document.getElementById(sectionId))
         .filter(Boolean) as HTMLElement[];
 
-      if (sections.length === 0) {
-        console.warn('❌ No sections found for theming');
-        return;
-      }
-
-      console.log(
-        '🎨 Observer ready — sections:',
-        sections.map((s) => s.id)
-      );
+      if (sections.length === 0) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
-          // Pick the section whose top is closest to the top of the viewport
           const visible = entries
             .filter((e) => e.isIntersecting)
-            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+            .sort(
+              (a, b) =>
+                Math.abs(a.boundingClientRect.top) -
+                Math.abs(b.boundingClientRect.top)
+            )[0];
 
           if (!visible) return;
 
@@ -112,15 +100,16 @@ export function useScrollController(enabled: boolean) {
           if (themeKey) applyTheme(themeKey);
         },
         {
-          rootMargin: '-10% 0px -60% 0px',
-          threshold: [0, 0.1, 0.5],
+          // Only trigger when a section is well into the viewport
+          rootMargin: '-30% 0px -50% 0px',
+          threshold: [0, 0.2, 0.5, 0.8],
         }
       );
 
       sections.forEach((section) => observer.observe(section));
 
       return () => observer.disconnect();
-    }, 150);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [enabled]);

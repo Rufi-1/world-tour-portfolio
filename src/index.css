@@ -124,3 +124,68 @@ html.lenis {
 .lenis.lenis-stopped {
   overflow: hidden;
 }
+
+/* Mobile-only: reduce whitespace */
+@media (max-width: 800px) {
+  .country-section,
+  .journey-section,
+  .closing-section,
+  .contact-section {
+    padding: 80px 0 !important;
+  }
+
+  .hero {
+    padding: 120px 0 60px !important;
+    min-height: auto !important;
+  }
+
+  .about-layout,
+  .journey-grid,
+  .skills-grid,
+  .projects-list,
+  .closing-columns,
+  .learning-strip {
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .section-heading {
+    margin-bottom: 20px !important;
+  }
+
+  h1 {
+    font-size: clamp(42px, 11vw, 62px) !important;
+    margin-bottom: 24px !important;
+  }
+
+  h2 {
+    font-size: clamp(36px, 9vw, 54px) !important;
+  }
+
+  .hero-meta {
+    margin-top: 40px !important;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Reduce 3D model canvas height on mobile */
+  .country-section canvas,
+  .journey-section canvas,
+  .closing-section canvas,
+  .contact-section canvas {
+    max-height: 340px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .country-section,
+  .journey-section,
+  .closing-section,
+  .contact-section {
+    padding: 60px 0 !important;
+  }
+
+  .hero {
+    padding: 100px 0 40px !important;
+  }
+}
