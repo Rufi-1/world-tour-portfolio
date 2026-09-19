@@ -1,12 +1,4 @@
-import {
-  Component,
-  useRef,
-  useState,
-  Suspense,
-  useMemo,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { Component, useRef, useState, Suspense, useMemo, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
@@ -30,7 +22,7 @@ class ModelErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ height: 600, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
+        <div style={{ height: 500, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
           {this.props.label || 'Model unavailable'}
         </div>
       );
@@ -65,7 +57,6 @@ function ModelInner({ url, size, active }: InnerProps) {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
-    // Only animate when this section is the active one
     if (!active) return;
     const d = Math.min(delta, 0.05);
     ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
@@ -91,7 +82,7 @@ type Props = {
   size?: number;
   height?: number;
   variant?: 'default' | 'background' | 'side';
-  /** Whether the model should actively animate. When false, it stays still. */
+  vertical?: boolean;
   active?: boolean;
 };
 
@@ -101,34 +92,12 @@ export function CountryModel({
   size = 1,
   height = 600,
   variant = 'default',
+  vertical = false,
   active = true,
 }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Mount the Canvas once and NEVER unmount it.
-  // This prevents the WebGL context churn that was causing "Context Lost".
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setMounted(true);
-          observer.disconnect(); // Once mounted, we never un-mount
-        }
-      },
-      { rootMargin: '400px 0px', threshold: 0.01 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   if (prefersReducedMotion) {
     return (
@@ -140,69 +109,47 @@ export function CountryModel({
 
   if (variant === 'background') {
     return (
-      <div
-        ref={containerRef}
-        style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}
-      >
-        {mounted && (
-          <ModelErrorBoundary label={label}>
-            <Canvas
-              camera={{ position: [0, 0, 3.5], fov: 50 }}
-              dpr={[1, 1.5]}
-              gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-            >
-              <ambientLight intensity={2} />
-              <directionalLight position={[5, 5, 5]} intensity={2.5} />
-              <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-              <Suspense fallback={null}>
-                <ModelInner url={url} size={size} active={active} />
-              </Suspense>
-            </Canvas>
-          </ModelErrorBoundary>
-        )}
-      </div>
+      <ModelErrorBoundary label={label}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        >
+          <Canvas
+            camera={{ position: [0, 0, 3.5], fov: 50 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={2} />
+            <directionalLight position={[5, 5, 5]} intensity={2.5} />
+            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} size={size} active={active} />
+            </Suspense>
+          </Canvas>
+        </div>
+      </ModelErrorBoundary>
     );
   }
 
   if (variant === 'side') {
     return (
-      <div
-        ref={containerRef}
-        style={{
-          position: 'absolute',
-          right: '2%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 'min(50vw, 620px)',
-          height: 'min(50vw, 620px)',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      >
-        {mounted && (
-          <ModelErrorBoundary label={label}>
-            <Canvas
-              camera={{ position: [0, 0, 4], fov: 50 }}
-              dpr={[1, 1.5]}
-              gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-            >
-              <ambientLight intensity={2} />
-              <directionalLight position={[5, 5, 5]} intensity={2.5} />
-              <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-              <Suspense fallback={null}>
-                <ModelInner url={url} size={size} active={active} />
-              </Suspense>
-            </Canvas>
-          </ModelErrorBoundary>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div ref={containerRef} style={{ width: '100%', height }}>
-      {mounted && (
-        <ModelErrorBoundary label={label}>
+      <ModelErrorBoundary label={label}>
+        <div
+          style={{
+            position: 'absolute',
+            right: '2%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 'min(50vw, 620px)',
+            height: 'min(50vw, 620px)',
+            pointerEvents: 'none',
+            zIndex: 5,
+          }}
+        >
           <Canvas
             camera={{ position: [0, 0, 4], fov: 50 }}
             dpr={[1, 1.5]}
@@ -215,13 +162,32 @@ export function CountryModel({
               <ModelInner url={url} size={size} active={active} />
             </Suspense>
           </Canvas>
-        </ModelErrorBoundary>
-      )}
-      {label && (
-        <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
-          {label}
-        </p>
-      )}
-    </div>
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
+
+  return (
+    <ModelErrorBoundary label={label}>
+      <div style={{ width: '100%', height, position: 'relative', zIndex: 5 }}>
+        <Canvas
+          camera={{ position: [0, 0, 4], fov: 50 }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+        >
+          <ambientLight intensity={2} />
+          <directionalLight position={[5, 5, 5]} intensity={2.5} />
+          <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+          <Suspense fallback={null}>
+            <ModelInner url={url} size={size} active={active} />
+          </Suspense>
+        </Canvas>
+        {label && (
+          <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
+            {label}
+          </p>
+        )}
+      </div>
+    </ModelErrorBoundary>
   );
 }

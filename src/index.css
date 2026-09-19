@@ -354,3 +354,50 @@ html {
     letter-spacing: -0.03em;
   }
 }
+
+
+/* Ensure models are above the section background layer */
+.journey-section canvas,
+.country-section canvas,
+.hero canvas,
+.closing-section canvas,
+.contact-section canvas {
+  position: relative;
+  z-index: 3 !important;
+}
+
+.journey-section .section-particles,
+.country-section .section-particles,
+.hero .section-particles,
+.closing-section .section-particles,
+.contact-section .section-particles {
+  z-index: 1;
+}
+
+/* Force all 3D canvases above section backgrounds and particles */
+canvas {
+  position: relative;
+  z-index: 5 !important;
+}
+
+.section-particles {
+  z-index: 1 !important;
+}
+
+.country-themed::before {
+  z-index: 0 !important;
+}
+
+/* Section content above canvases */
+.hero-copy,
+.section-heading,
+.section-number,
+.about-layout,
+.journey-grid,
+.skills-grid,
+.projects-list,
+.closing-columns,
+.contact-copy {
+  position: relative;
+  z-index: 6;
+}

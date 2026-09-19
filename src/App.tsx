@@ -33,11 +33,7 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-['india', 'japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
-  (name) => {
-    useGLTF.preload(`/models/${name}.glb`);
-  }
-);
+
 
 const CountrySymbol = lazy(() => import('@/components/CountrySymbol'));
 
@@ -692,6 +688,23 @@ function App() {
 }
 
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
       <motion.div
@@ -700,6 +713,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         aria-modal="true"
         aria-labelledby="project-title"
         onClick={(event) => event.stopPropagation()}
+        onWheel={(event) => event.stopPropagation()}
         initial={{ opacity: 0, scale: 0.92, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: 30 }}
