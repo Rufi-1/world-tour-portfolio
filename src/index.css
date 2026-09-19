@@ -401,3 +401,34 @@ canvas {
   position: relative;
   z-index: 6;
 }
+
+/* Modal must scroll internally */
+.project-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.project-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.modal-backdrop {
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 800px) {
+  .project-modal {
+    max-height: 88vh;
+    padding: 24px;
+  }
+}

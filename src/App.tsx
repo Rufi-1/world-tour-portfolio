@@ -372,13 +372,25 @@ function App() {
             </h2>
           </div>
 
-          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel
-              url="/models/germany.glb"
-              label="Schwerin Castle · Germany"
-              size={1.7}
-              height={650}
-            />
+          <div
+  style={{
+    position: 'relative',
+    zIndex: 2,
+    margin: '3rem auto',
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%',
+  }}
+>
+  <div style={{ width: 'min(70vw, 800px)' }}>
+    <CountryModel
+      url="/models/germany.glb"
+      label="Schwerin Castle · Germany"
+      size={1.7}
+      height={650}
+    />
+  </div>
+</div>
           </div>
 
           <SectionReveal>
@@ -511,10 +523,16 @@ function App() {
 
         {/* 06 — SWITZERLAND (inline) */}
         <ScrollSection
-          id="beyond"
-          className="closing-section section-shell country-themed"
-          style={{ '--section-bg': themes.swissBeyond.sectionBg } as React.CSSProperties}
-        >
+  id="beyond"
+  className="closing-section section-shell country-themed"
+  style={
+    {
+      '--section-bg': themes.swissBeyond.sectionBg,
+      position: 'relative',
+      overflow: 'hidden',
+    } as React.CSSProperties
+  }
+>
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
@@ -537,15 +555,11 @@ function App() {
               <span>Always in motion.</span>
             </h2>
 
-            <div style={{ margin: '3rem 0' }}>
-              <CountryModel
-                url="/models/switzerland.glb"
-                label="Alpine Switzerland"
-                size={1.5}
-                height={650}
-              />
-            </div>
-
+            <CountryModel
+  url="/models/switzerland.glb"
+  side
+  size={1.5}
+/>
             <SectionReveal>
               <div className="closing-columns">
                 <div>
@@ -691,18 +705,10 @@ function App() {
 
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
   useEffect(() => {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
+    const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = originalOverflow;
     };
   }, []);
 

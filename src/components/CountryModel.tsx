@@ -88,6 +88,7 @@ type Props = {
   height?: number;
   vertical?: boolean;
   background?: boolean;
+  side?: boolean;
 };
 
 export function CountryModel({
@@ -97,6 +98,7 @@ export function CountryModel({
   height = 550,
   vertical = false,
   background = false,
+  side = false,
 }: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
@@ -140,6 +142,38 @@ export function CountryModel({
   }
 
   // Default: inline block, sits in the normal flow
+    // Side variant: absolutely positioned on the right
+  if (side) {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div
+          style={{
+            position: 'absolute',
+            right: '2%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 'min(50vw, 620px)',
+            height: 'min(50vw, 620px)',
+            pointerEvents: 'none',
+            zIndex: 3,
+          }}
+        >
+          <Canvas
+            camera={{ position: [0, 0, 4], fov: 50 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+          >
+            <ambientLight intensity={2} />
+            <directionalLight position={[5, 5, 5]} intensity={2.5} />
+            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+            <Suspense fallback={null}>
+              <ModelInner url={url} size={size} vertical={vertical} />
+            </Suspense>
+          </Canvas>
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
   return (
     <ModelErrorBoundary label={label}>
       <div
