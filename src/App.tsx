@@ -34,7 +34,6 @@ import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
 // Preload models in the background — downloads while the page loads.
-// The CountryModel component will still only render when its section is in view.
 ['india', 'japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
   (name) => {
     useGLTF.preload(`/models/${name}.glb`);
@@ -221,7 +220,12 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/india.glb" variant="side" size={1.5} />
+          <CountryModel
+            url="/models/india.glb"
+            variant="side"
+            size={1.5}
+            active={activeTheme.key === 'india'}
+          />
           <div className="section-particles">
             <ParticleSystem theme={themes.india} active={activeTheme.key === 'india'} />
           </div>
@@ -284,6 +288,7 @@ function App() {
               label="Torii Gate · Japan"
               size={1.5}
               height={650}
+              active={activeTheme.key === 'japan'}
             />
           </div>
 
@@ -357,6 +362,7 @@ function App() {
               label="Great Wall · China"
               size={2.4}
               height={650}
+              active={activeTheme.key === 'china'}
             />
           </div>
 
@@ -374,88 +380,89 @@ function App() {
           </SectionReveal>
         </ScrollSection>
 
-        {/* 04 — GERMANY */}
+        {/* 04 — GERMANY (inline, after heading) */}
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.germany.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.germany.sectionBg } as React.CSSProperties}
         >
-          <CountryModel url="/models/germany.glb" variant="side" size={1.5} tiltX={0.3} />
           <div className="section-particles">
             <ParticleSystem theme={themes.germany} active={activeTheme.key === 'germany'} />
           </div>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <div className="section-number">04</div>
-            <div className="section-heading">
-              <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
-              <h2>
-                Precision in the
-                <br />
-                <span>details.</span>
-              </h2>
-            </div>
-
-            <SectionReveal>
-              <div className="journey-grid">
-                <div className="timeline-card">
-                  <div className="timeline-top">
-                    <span>EDUCATION</span>
-                    <Database size={18} />
-                  </div>
-                  {resume.education.map((item) => (
-                    <div className="timeline-item" key={item.year}>
-                      <span>{item.year}</span>
-                      <div>
-                        <h3>{item.title}</h3>
-                        <p>{item.place}</p>
-                        <b>{item.score}</b>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="experience-card">
-                  <div className="timeline-top">
-                    <span>EXPERIENCE / 01</span>
-                    <BriefcaseBusiness size={18} />
-                  </div>
-                  <div className="experience-title">
-                    <p>{resume.experience.dates}</p>
-                    <h3>{resume.experience.title}</h3>
-                    <span>
-                      {resume.experience.company} · {resume.experience.location}
-                    </span>
-                  </div>
-                  <ul>
-                    {resume.experience.points.map((point) => (
-                      <li key={point}>
-                        <Check size={15} />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="learning-strip">
-                <span>CERTIFIED / LEARNING NEXT</span>
-                <div>
-                  {resume.certifications.map((item) => (
-                    <p key={item}>{item}</p>
-                  ))}
-                  {resume.learning.map((item) => (
-                    <p key={item}>
-                      <Sparkles size={13} /> {item}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </SectionReveal>
+          <div className="section-number">04</div>
+          <div className="section-heading">
+            <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
+            <h2>
+              Precision in the
+              <br />
+              <span>details.</span>
+            </h2>
           </div>
+
+          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
+            <CountryModel
+              url="/models/germany.glb"
+              label="Schwerin Castle · Germany"
+              size={2}
+              height={650}
+              active={activeTheme.key === 'germany'}
+            />
+          </div>
+
+          <SectionReveal>
+            <div className="journey-grid">
+              <div className="timeline-card">
+                <div className="timeline-top">
+                  <span>EDUCATION</span>
+                  <Database size={18} />
+                </div>
+                {resume.education.map((item) => (
+                  <div className="timeline-item" key={item.year}>
+                    <span>{item.year}</span>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.place}</p>
+                      <b>{item.score}</b>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="experience-card">
+                <div className="timeline-top">
+                  <span>EXPERIENCE / 01</span>
+                  <BriefcaseBusiness size={18} />
+                </div>
+                <div className="experience-title">
+                  <p>{resume.experience.dates}</p>
+                  <h3>{resume.experience.title}</h3>
+                  <span>
+                    {resume.experience.company} · {resume.experience.location}
+                  </span>
+                </div>
+                <ul>
+                  {resume.experience.points.map((point) => (
+                    <li key={point}>
+                      <Check size={15} />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="learning-strip">
+              <span>CERTIFIED / LEARNING NEXT</span>
+              <div>
+                {resume.certifications.map((item) => (
+                  <p key={item}>{item}</p>
+                ))}
+                {resume.learning.map((item) => (
+                  <p key={item}>
+                    <Sparkles size={13} /> {item}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </SectionReveal>
         </ScrollSection>
 
         {/* 05 — CANADA */}
@@ -498,6 +505,7 @@ function App() {
                 label="Canada · Selected Work"
                 size={1.3}
                 height={650}
+                active={activeTheme.key === 'canada'}
               />
             </div>
 
@@ -542,7 +550,12 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/switzerland.glb" variant="side" size={1.5} />
+          <CountryModel
+            url="/models/switzerland.glb"
+            variant="side"
+            size={1.5}
+            active={activeTheme.key === 'swissBeyond'}
+          />
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
@@ -592,7 +605,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 07 — WORLD */}
+        {/* 07 — WORLD (space as background) */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
@@ -604,7 +617,13 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/space.glb" variant="background" size={3.8} vertical />
+          <CountryModel
+            url="/models/space.glb"
+            variant="background"
+            size={3.8}
+            vertical
+            active={activeTheme.key === 'world'}
+          />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
           </div>

@@ -42,11 +42,10 @@ class ModelErrorBoundary extends Component<
 type InnerProps = {
   url: string;
   size: number;
-  vertical?: boolean;
-  tiltX?: number;
+  active: boolean;
 };
 
-function ModelInner({ url, size, vertical = false, tiltX = 0 }: InnerProps) {
+function ModelInner({ url, size, active }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -66,25 +65,13 @@ function ModelInner({ url, size, vertical = false, tiltX = 0 }: InnerProps) {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
+    // Only animate when this section is the active one
+    if (!active) return;
     const d = Math.min(delta, 0.05);
-
-    // Rotation: normal when idle, faster when hovered
-    const speed = hovered ? 0.45 : 0.12;
-    if (vertical) {
-      ref.current.rotation.x += d * speed;
-    } else {
-      ref.current.rotation.y += d * speed;
-    }
-
-    // Gentle floating
+    ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
-
-    // Scale: back to base when not hovered, slightly larger when hovered
-    const targetScale = hovered ? normalizedScale * 1.05 : normalizedScale;
-    ref.current.scale.lerp(
-      { x: targetScale, y: targetScale, z: targetScale },
-      0.15
-    );
+    const target = hovered ? normalizedScale * 1.05 : normalizedScale;
+    ref.current.scale.lerp({ x: target, y: target, z: target }, 0.15);
   });
 
   return (
@@ -92,7 +79,6 @@ function ModelInner({ url, size, vertical = false, tiltX = 0 }: InnerProps) {
       ref={ref}
       object={scene}
       position={offset}
-      rotation={[tiltX, 0, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     />
@@ -105,8 +91,8 @@ type Props = {
   size?: number;
   height?: number;
   variant?: 'default' | 'background' | 'side';
-  vertical?: boolean;
-  tiltX?: number;
+  /** Whether the model should actively animate. When false, it stays still. */
+  active?: boolean;
 };
 
 export function CountryModel({
@@ -115,27 +101,29 @@ export function CountryModel({
   size = 1,
   height = 600,
   variant = 'default',
-  vertical = false,
-  tiltX = 0,
+  active = true,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasEverBeenVisible, setHasEverBeenVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Mount the Canvas once and NEVER unmount it.
+  // This prevents the WebGL context churn that was causing "Context Lost".
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-        if (entry.isIntersecting) setHasEverBeenVisible(true);
+        if (entry.isIntersecting) {
+          setMounted(true);
+          observer.disconnect(); // Once mounted, we never un-mount
+        }
       },
-      { rootMargin: '200px 0px', threshold: 0.01 }
+      { rootMargin: '400px 0px', threshold: 0.01 }
     );
 
     observer.observe(el);
@@ -150,16 +138,13 @@ export function CountryModel({
     );
   }
 
-  const shouldRender = hasEverBeenVisible && isVisible;
-
-  // Background variant
   if (variant === 'background') {
     return (
       <div
         ref={containerRef}
         style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}
       >
-        {shouldRender && (
+        {mounted && (
           <ModelErrorBoundary label={label}>
             <Canvas
               camera={{ position: [0, 0, 3.5], fov: 50 }}
@@ -170,7 +155,7 @@ export function CountryModel({
               <directionalLight position={[5, 5, 5]} intensity={2.5} />
               <directionalLight position={[-5, -5, -5]} intensity={1.2} />
               <Suspense fallback={null}>
-                <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
+                <ModelInner url={url} size={size} active={active} />
               </Suspense>
             </Canvas>
           </ModelErrorBoundary>
@@ -179,7 +164,6 @@ export function CountryModel({
     );
   }
 
-  // Side variant
   if (variant === 'side') {
     return (
       <div
@@ -195,7 +179,7 @@ export function CountryModel({
           zIndex: 1,
         }}
       >
-        {shouldRender && (
+        {mounted && (
           <ModelErrorBoundary label={label}>
             <Canvas
               camera={{ position: [0, 0, 4], fov: 50 }}
@@ -206,7 +190,7 @@ export function CountryModel({
               <directionalLight position={[5, 5, 5]} intensity={2.5} />
               <directionalLight position={[-5, -5, -5]} intensity={1.2} />
               <Suspense fallback={null}>
-                <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
+                <ModelInner url={url} size={size} active={active} />
               </Suspense>
             </Canvas>
           </ModelErrorBoundary>
@@ -215,10 +199,9 @@ export function CountryModel({
     );
   }
 
-  // Default inline
   return (
     <div ref={containerRef} style={{ width: '100%', height }}>
-      {shouldRender && (
+      {mounted && (
         <ModelErrorBoundary label={label}>
           <Canvas
             camera={{ position: [0, 0, 4], fov: 50 }}
@@ -229,7 +212,7 @@ export function CountryModel({
             <directionalLight position={[5, 5, 5]} intensity={2.5} />
             <directionalLight position={[-5, -5, -5]} intensity={1.2} />
             <Suspense fallback={null}>
-              <ModelInner url={url} size={size} vertical={vertical} tiltX={tiltX} />
+              <ModelInner url={url} size={size} active={active} />
             </Suspense>
           </Canvas>
         </ModelErrorBoundary>
