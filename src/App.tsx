@@ -33,7 +33,6 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-// Preload models in the background — downloads while the page loads.
 ['india', 'japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
   (name) => {
     useGLTF.preload(`/models/${name}.glb`);
@@ -130,25 +129,6 @@ function App() {
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setIsMenuOpen(false);
-  };
-
-  const getSymbol = (sectionId: string, large?: boolean) => {
-    const config = sectionSymbols.find((s) => s.section === sectionId);
-    if (!config) return null;
-    return (
-      <Suspense
-        fallback={
-          <SymbolFallback label={config.label} palette={config.palette} large={large} />
-        }
-      >
-        <CountrySymbol
-          kind={config.kind}
-          label={config.label}
-          palette={config.palette}
-          large={large}
-        />
-      </Suspense>
-    );
   };
 
   return (
@@ -380,7 +360,7 @@ function App() {
           </SectionReveal>
         </ScrollSection>
 
-        {/* 04 — GERMANY (inline, after heading) */}
+        {/* 04 — GERMANY (inline, in flow) */}
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
@@ -403,7 +383,7 @@ function App() {
             <CountryModel
               url="/models/germany.glb"
               label="Schwerin Castle · Germany"
-              size={2}
+              size={1.8}
               height={650}
               active={activeTheme.key === 'germany'}
             />
@@ -497,16 +477,6 @@ function App() {
               <p className="heading-aside">
                 Technology only matters when it makes something clearer, kinder, or more possible.
               </p>
-            </div>
-
-            <div style={{ margin: '3rem 0' }}>
-              <CountryModel
-                url="/models/canada.glb"
-                label="Canada · Selected Work"
-                size={1.3}
-                height={650}
-                active={activeTheme.key === 'canada'}
-              />
             </div>
 
             <SectionReveal>
@@ -660,7 +630,7 @@ function App() {
               </div>
               <a
                 className="primary-button resume-download"
-                href="/RA_latest_resume.pdf"
+                href="/Rufi_Aiman_Resume_Current.pdf"
                 download
               >
                 <Download size={16} /> Download Resume
@@ -699,7 +669,7 @@ function App() {
           <span>&copy; 2026 Rufi Aiman</span>
           <a href={`tel:${resume.phone}`}>{resume.phone}</a>
           <span>Mysuru, Karnataka, India</span>
-          <a className="resume-link" href="/RA_latest_resume.pdf" download>
+          <a className="resume-link" href="/Rufi_Aiman_Resume_Current.pdf" download>
             <Download size={14} /> Resume / PDF
           </a>
         </div>
@@ -763,14 +733,35 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
             <span key={tag}>{tag}</span>
           ))}
         </div>
-        <a
-          className="text-link"
-          href={`mailto:${resume.email}?subject=${encodeURIComponent(
-            `About ${project.title}`
-          )}`}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '16px',
+            marginTop: '8px',
+            alignItems: 'center',
+          }}
         >
-          Ask me about this project <ArrowUpRight size={15} />
-        </a>
+          {'repo' in project && project.repo && (
+            <a
+              className="primary-button"
+              href={project.repo as string}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: 'none' }}
+            >
+              <Github size={16} /> View on GitHub
+            </a>
+          )}
+          <a
+            className="text-link"
+            href={`mailto:${resume.email}?subject=${encodeURIComponent(
+              `About ${project.title}`
+            )}`}
+          >
+            Ask me about this project <ArrowUpRight size={15} />
+          </a>
+        </div>
       </motion.div>
     </div>
   );

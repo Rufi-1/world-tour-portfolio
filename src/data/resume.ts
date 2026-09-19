@@ -3,7 +3,7 @@ export const resume = {
   email: 'rufiaiman7790@gmail.com',
   phone: '8549931775',
   github: 'https://github.com/Rufi-1',
-  linkedin: 'https://linkedin.com/in/rufiaiman-6a7bba319',
+  linkedin: 'https://linkedin.com/in/rufi-aiman-6a7bba319/',
   location: 'Mysuru, Karnataka, India',
 
   objective:
@@ -46,9 +46,9 @@ export const resume = {
     company: 'Spatialhawk Geo-Informatics Pvt. Ltd.',
     location: 'Mysuru',
     points: [
-      'Cleaned and structured datasets using Python (Pandas), handling missing values and removing duplicates.',
+      'Cleaned and standardized structured datasets using Python (Pandas) — handled missing values and removed duplicates.',
       'Detected data anomalies using boxplots and the IQR method, documenting root causes for reliability.',
-      'Wrote SQL queries with Pivot Tables and Excel reports for descriptive statistics and stakeholder reporting.',
+      'Wrote SQL queries and built Pivot Tables/Excel reports for descriptive statistics and stakeholder reporting.',
     ],
   },
 
@@ -59,14 +59,17 @@ export const resume = {
       accent: 'saffron',
       title: 'Indian AI Dietician',
       description:
-        'A multilingual, voice-enabled diet app for Indian users, built to fill the gap in ICMR/NIN-aligned regional-language tools.',
+        'A multilingual, voice-enabled AI Dietician built for the Indian demographic — generating culturally relevant, medically safe diet plans aligned with ICMR/NIN guidelines.',
       problem:
-        'Designed a multilingual, voice-enabled diet app for Indian users, addressing the lack of ICMR/NIN-aligned regional-language tools.',
+        "Most AI dietary tools are trained on Western datasets and recommend unfamiliar, expensive ingredients. They're also English-only and text-only. Indian-AI Dietician addresses this with regional-language voice support and diet plans built around affordable Indian staples.",
       solutions: [
-        'Generated ICMR/NIN-aligned diet plans in 5 languages via Whisper & gTTS, using prompt engineering with Groq-hosted Llama 3.3.',
-        'Implemented secure bcrypt authentication and persistent JSON-based user history tracking.',
+        'Diet plans aligned to ICMR & NIN guidelines for cardiac, PCOS, diabetes, hypertension, and pregnancy.',
+        'Multilingual voice & text interaction in English, Hindi, Kannada, Telugu, and Tamil.',
+        'Speech-to-text via Whisper Large V3 and text-to-speech via gTTS.',
+        'AI recommendations via Groq-hosted Llama 3.3 (70B), with secure bcrypt auth and JSON-based chat history.',
       ],
-      stack: ['Python', 'Streamlit', 'Groq API', 'Whisper', 'gTTS', 'Google Translate API', 'bcrypt'],
+      stack: ['Python', 'Streamlit', 'Groq API', 'Llama 3.3', 'Whisper Large V3', 'Google Translate API', 'gTTS', 'bcrypt'],
+      repo: 'https://github.com/Rufi-1/indian-ai-dietician',
     },
     {
       index: '02',
@@ -74,14 +77,17 @@ export const resume = {
       accent: 'mint',
       title: 'MediLingo — Healthcare Language Assistant',
       description:
-        'A healthcare language assistant that translates complex medical terminology into plain, accessible explanations.',
+        'An AI-powered healthcare assistant that converts complex medical terminology into simple, understandable language for patients.',
       problem:
-        'Medical terminology can often be difficult for patients to understand, creating communication gaps.',
+        'Medical reports and terminology are often difficult for patients to understand, creating communication barriers and reducing healthcare accessibility.',
       solutions: [
-        'Simplified complex medical terminology into plain language using the Gemini API.',
-        'Delivered explanations in English and Hindi, written and audio, to improve patient accessibility.',
+        'Simplifies complex medical terminology into plain, patient-friendly language using the Gemini API.',
+        'Multilingual output — English and Hindi, in both written and audio form.',
+        'Hindi text & speech output via gTTS for broader accessibility.',
+        'User-friendly, accessible interface built with Streamlit.',
       ],
-      stack: ['Python', 'SQL', 'Gemini API'],
+      stack: ['Python', 'SQL', 'Gemini API', 'Streamlit', 'gTTS'],
+      repo: 'https://github.com/Rufi-1/medi-lingo',
     },
     {
       index: '03',
@@ -89,14 +95,17 @@ export const resume = {
       accent: 'sky',
       title: 'Data Analytics Studio',
       description:
-        'A dataset-agnostic statistical pipeline that adapts its full analysis workflow to any uploaded file.',
+        'A general-purpose data analysis dashboard for Google Colab — upload any CSV/Excel file and instantly get a full analytics workflow: cleaning, descriptive and inferential statistics, correlation analysis, outlier detection, and 60+ auto-generated visualizations.',
       problem:
-        'Built a dataset-agnostic tool that adapts its full statistical pipeline to any uploaded file.',
+        'Most data analysis notebooks are written for one specific dataset — column names, chart types, and statistical tests are hard-coded, so reusing them for a new dataset means rewriting large parts of the notebook.',
       solutions: [
-        'Built correlation/covariance analysis and inferential tests (Shapiro-Wilk, t-tests, ANOVA, chi-square).',
-        'Designed a dataset-agnostic architecture that adapts the analysis pipeline to any uploaded file.',
+        'Dynamic column-type detection — auto-identifies numeric, categorical, and date columns in any uploaded dataset.',
+        'Descriptive and inferential stats (Shapiro-Wilk, t-tests, ANOVA, chi-square) applied conditionally based on data structure.',
+        '60+ auto-generated visualizations (30+ Matplotlib + 30+ Seaborn), adapted to the dataset\'s actual columns.',
+        'Interactive chart builder using ipywidgets — build custom charts without writing code.',
       ],
-      stack: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Seaborn', 'SciPy'],
+      stack: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Seaborn', 'SciPy', 'ipywidgets', 'Google Colab'],
+      repo: 'https://github.com/Rufi-1/data-analytics-studio',
     },
   ],
 

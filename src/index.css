@@ -317,3 +317,40 @@ html {
   transform: translateY(-6px);
   box-shadow: 0 20px 60px color-mix(in srgb, var(--accent) 15%, transparent);
 }
+
+/* Project detail modal — make it scrollable */
+.project-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.project-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+@media (max-width: 800px) {
+  .project-modal {
+    max-height: 90vh;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 500px) {
+  .project-modal {
+    padding: 20px;
+  }
+  .project-modal h2 {
+    font-size: 30px;
+    letter-spacing: -0.03em;
+  }
+}
