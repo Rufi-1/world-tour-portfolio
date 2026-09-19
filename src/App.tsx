@@ -20,7 +20,6 @@ import {
   X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useGLTF } from '@react-three/drei';
 import { resume } from '@/data/resume';
 import type { SymbolKind } from '@/components/CountrySymbol';
 import ContactForm from '@/components/ContactForm';
@@ -32,8 +31,6 @@ import { themes } from '@/data/themes';
 import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
-
-
 
 const CountrySymbol = lazy(() => import('@/components/CountrySymbol'));
 
@@ -184,7 +181,7 @@ function App() {
       )}
 
       <main>
-        {/* 01 — INDIA (Taj Mahal on the right side) */}
+        {/* 01 — INDIA */}
         <ScrollSection
           id="origin"
           className="hero section-shell country-themed"
@@ -196,12 +193,6 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel
-            url="/models/india.glb"
-            variant="side"
-            size={1.5}
-            active={activeTheme.key === 'india'}
-          />
           <div className="section-particles">
             <ParticleSystem theme={themes.india} active={activeTheme.key === 'india'} />
           </div>
@@ -231,6 +222,14 @@ function App() {
                 Mysuru, IN <Globe2 size={13} />
               </span>
             </div>
+          </div>
+
+          <div style={{ position: 'relative', zIndex: 2, marginTop: '2rem' }}>
+            <CountryModel
+              url="/models/india.glb"
+              label="Taj Mahal · India"
+              size={1.2}
+            />
           </div>
 
           <div className="scroll-cue">
@@ -264,7 +263,6 @@ function App() {
               label="Torii Gate · Japan"
               size={1.5}
               height={650}
-              active={activeTheme.key === 'japan'}
             />
           </div>
 
@@ -336,9 +334,8 @@ function App() {
             <CountryModel
               url="/models/china.glb"
               label="Great Wall · China"
-              size={2.4}
+              size={2.2}
               height={650}
-              active={activeTheme.key === 'china'}
             />
           </div>
 
@@ -356,7 +353,7 @@ function App() {
           </SectionReveal>
         </ScrollSection>
 
-        {/* 04 — GERMANY (inline, in flow) */}
+        {/* 04 — GERMANY (inline) */}
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
@@ -379,9 +376,8 @@ function App() {
             <CountryModel
               url="/models/germany.glb"
               label="Schwerin Castle · Germany"
-              size={1.8}
+              size={1.7}
               height={650}
-              active={activeTheme.key === 'germany'}
             />
           </div>
 
@@ -475,6 +471,15 @@ function App() {
               </p>
             </div>
 
+            <div style={{ margin: '3rem 0' }}>
+              <CountryModel
+                url="/models/canada.glb"
+                label="Canada · Selected Work"
+                size={1.3}
+                height={650}
+              />
+            </div>
+
             <SectionReveal>
               <div className="projects-list">
                 {resume.projects.map((project) => (
@@ -504,24 +509,12 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 06 — SWITZERLAND */}
+        {/* 06 — SWITZERLAND (inline) */}
         <ScrollSection
           id="beyond"
           className="closing-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.swissBeyond.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.swissBeyond.sectionBg } as React.CSSProperties}
         >
-          <CountryModel
-            url="/models/switzerland.glb"
-            variant="side"
-            size={1.5}
-            active={activeTheme.key === 'swissBeyond'}
-          />
           <div className="section-particles">
             <ParticleSystem
               theme={themes.swissBeyond}
@@ -543,6 +536,16 @@ function App() {
               <br />
               <span>Always in motion.</span>
             </h2>
+
+            <div style={{ margin: '3rem 0' }}>
+              <CountryModel
+                url="/models/switzerland.glb"
+                label="Alpine Switzerland"
+                size={1.5}
+                height={650}
+              />
+            </div>
+
             <SectionReveal>
               <div className="closing-columns">
                 <div>
@@ -571,7 +574,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 07 — WORLD (space as background) */}
+        {/* 07 — WORLD (space background, vertical rotation) */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
@@ -585,10 +588,9 @@ function App() {
         >
           <CountryModel
             url="/models/space.glb"
-            variant="background"
-            size={3.8}
+            background
+            size={3.5}
             vertical
-            active={activeTheme.key === 'world'}
           />
           <div className="section-particles">
             <ParticleSystem theme={themes.world} active={activeTheme.key === 'world'} />
@@ -688,7 +690,6 @@ function App() {
 }
 
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
-  // Lock body scroll while modal is open
   useEffect(() => {
     const scrollY = window.scrollY;
     document.body.style.position = 'fixed';
@@ -713,7 +714,6 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         aria-modal="true"
         aria-labelledby="project-title"
         onClick={(event) => event.stopPropagation()}
-        onWheel={(event) => event.stopPropagation()}
         initial={{ opacity: 0, scale: 0.92, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: 30 }}
@@ -747,15 +747,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
             <span key={tag}>{tag}</span>
           ))}
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '16px',
-            marginTop: '8px',
-            alignItems: 'center',
-          }}
-        >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '8px', alignItems: 'center' }}>
           {'repo' in project && project.repo && (
             <a
               className="primary-button"

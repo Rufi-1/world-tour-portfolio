@@ -34,10 +34,10 @@ class ModelErrorBoundary extends Component<
 type InnerProps = {
   url: string;
   size: number;
-  active: boolean;
+  vertical: boolean;
 };
 
-function ModelInner({ url, size, active }: InnerProps) {
+function ModelInner({ url, size, vertical }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -57,9 +57,14 @@ function ModelInner({ url, size, active }: InnerProps) {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
-    if (!active) return;
     const d = Math.min(delta, 0.05);
-    ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
+    if (vertical) {
+      // Vertical rotation: spin around X axis (top-to-bottom)
+      ref.current.rotation.x += d * 0.15;
+    } else {
+      // Horizontal rotation: spin around Y axis (side-to-side)
+      ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
+    }
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
     const target = hovered ? normalizedScale * 1.05 : normalizedScale;
     ref.current.scale.lerp({ x: target, y: target, z: target }, 0.15);
@@ -81,19 +86,17 @@ type Props = {
   label?: string;
   size?: number;
   height?: number;
-  variant?: 'default' | 'background' | 'side';
   vertical?: boolean;
-  active?: boolean;
+  background?: boolean;
 };
 
 export function CountryModel({
   url,
   label,
   size = 1,
-  height = 600,
-  variant = 'default',
+  height = 550,
   vertical = false,
-  active = true,
+  background = false,
 }: Props) {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
@@ -107,7 +110,8 @@ export function CountryModel({
     );
   }
 
-  if (variant === 'background') {
+  // Background variant: absolute full-section, sits behind content
+  if (background) {
     return (
       <ModelErrorBoundary label={label}>
         <div
@@ -115,39 +119,7 @@ export function CountryModel({
             position: 'absolute',
             inset: 0,
             pointerEvents: 'none',
-            zIndex: 1,
-          }}
-        >
-          <Canvas
-            camera={{ position: [0, 0, 3.5], fov: 50 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-          >
-            <ambientLight intensity={2} />
-            <directionalLight position={[5, 5, 5]} intensity={2.5} />
-            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-            <Suspense fallback={null}>
-              <ModelInner url={url} size={size} active={active} />
-            </Suspense>
-          </Canvas>
-        </div>
-      </ModelErrorBoundary>
-    );
-  }
-
-  if (variant === 'side') {
-    return (
-      <ModelErrorBoundary label={label}>
-        <div
-          style={{
-            position: 'absolute',
-            right: '2%',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: 'min(50vw, 620px)',
-            height: 'min(50vw, 620px)',
-            pointerEvents: 'none',
-            zIndex: 5,
+            zIndex: 0,
           }}
         >
           <Canvas
@@ -159,7 +131,7 @@ export function CountryModel({
             <directionalLight position={[5, 5, 5]} intensity={2.5} />
             <directionalLight position={[-5, -5, -5]} intensity={1.2} />
             <Suspense fallback={null}>
-              <ModelInner url={url} size={size} active={active} />
+              <ModelInner url={url} size={size} vertical={vertical} />
             </Suspense>
           </Canvas>
         </div>
@@ -167,9 +139,17 @@ export function CountryModel({
     );
   }
 
+  // Default: inline block, sits in the normal flow
   return (
     <ModelErrorBoundary label={label}>
-      <div style={{ width: '100%', height, position: 'relative', zIndex: 5 }}>
+      <div
+        style={{
+          width: '100%',
+          height,
+          position: 'relative',
+          zIndex: 3,
+        }}
+      >
         <Canvas
           camera={{ position: [0, 0, 4], fov: 50 }}
           dpr={[1, 1.5]}
@@ -179,7 +159,7 @@ export function CountryModel({
           <directionalLight position={[5, 5, 5]} intensity={2.5} />
           <directionalLight position={[-5, -5, -5]} intensity={1.2} />
           <Suspense fallback={null}>
-            <ModelInner url={url} size={size} active={active} />
+            <ModelInner url={url} size={size} vertical={vertical} />
           </Suspense>
         </Canvas>
         {label && (
