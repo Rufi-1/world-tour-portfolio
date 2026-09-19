@@ -1,54 +1,95 @@
-import { useEffect, useRef, useState } from 'react';
-import { Plane } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
-type TransitionState = {
-  visible: boolean;
-  countryName: string;
-  countryIndex: string;
-  flag: string;
+type Props = {
+  activeTheme: string;
 };
 
-const countryInfo: Record<string, { name: string; index: string; flag: string }> = {
-  india: { name: 'India', index: '01', flag: 'IN' },
-  japan: { name: 'Japan', index: '02', flag: 'JP' },
-  china: { name: 'China', index: '03', flag: 'CN' },
-  germany: { name: 'Germany', index: '04', flag: 'DE' },
-  switzerland: { name: 'Switzerland', index: '05', flag: 'CH' },
-  canada: { name: 'Canada', index: '06', flag: 'CA' },
-  swissBeyond: { name: 'Switzerland', index: '07', flag: 'CH' },
-  world: { name: 'World', index: '08', flag: 'WO' },
-};
-
-export default function CountryTransition({ activeTheme }: { activeTheme: string }) {
-  const [transition, setTransition] = useState<TransitionState>({ visible: false, countryName: '', countryIndex: '', flag: '' });
-  const lastThemeRef = useRef<string>('');
-  const timeoutRef = useRef<number>(0);
+export default function CountryTransition({ activeTheme }: Props) {
+  const [showTransition, setShowTransition] = useState(false);
+  const [transitionKey, setTransitionKey] = useState(0);
 
   useEffect(() => {
-    if (activeTheme === lastThemeRef.current) return;
-    lastThemeRef.current = activeTheme;
-    const info = countryInfo[activeTheme];
-    if (!info) return;
-    window.clearTimeout(timeoutRef.current);
-    setTransition({ visible: true, countryName: info.name, countryIndex: info.index, flag: info.flag });
-    timeoutRef.current = window.setTimeout(() => {
-      setTransition((prev) => ({ ...prev, visible: false }));
-    }, 2200);
-    return () => window.clearTimeout(timeoutRef.current);
+    // Trigger a brief overlay whenever the theme changes
+    setShowTransition(true);
+    setTransitionKey((k) => k + 1);
+    const timer = setTimeout(() => setShowTransition(false), 900);
+    return () => clearTimeout(timer);
   }, [activeTheme]);
 
-  if (!transition.flag) return null;
-
   return (
-    <div className={`country-transition ${transition.visible ? 'visible' : 'hidden'}`} aria-hidden="true">
-      <div className="transition-plane"><Plane size={22} /><span className="plane-trail" /></div>
-      <div className="transition-stamp">
-        <div className="stamp-border">
-          <span className="stamp-index">{transition.countryIndex}</span>
-          <strong>{transition.flag}</strong>
-          <small>{transition.countryName}</small>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {showTransition && (
+        <motion.div
+          key={transitionKey}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 40,
+          }}
+          aria-hidden="true"
+        >
+          {/* Vertical sweep line */}
+          <motion.div
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            exit={{ scaleY: 0 }}
+            transition={{ duration: 0.6, ease: [0.83, 0, 0.17, 1] }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: `linear-gradient(180deg, transparent 0%, var(--accent) 50%, transparent 100%)`,
+              opacity: 0.12,
+              transformOrigin: 'top',
+            }}
+          />
+
+          {/* Horizontal sweep line moving left-to-right */}
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: '100%' }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.9, ease: [0.83, 0, 0.17, 1] }}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              width: '100%',
+              height: '2px',
+              background: `linear-gradient(90deg, transparent, var(--accent), transparent)`,
+              boxShadow: `0 0 20px var(--accent), 0 0 40px var(--accent)`,
+            }}
+          />
+
+          {/* Fading dots trailing */}
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ x: '-10%', opacity: 0 }}
+              animate={{ x: '110%', opacity: [0, 1, 0] }}
+              transition={{
+                duration: 1.0,
+                delay: i * 0.05,
+                ease: 'easeOut',
+              }}
+              style={{
+                position: 'absolute',
+                top: `calc(50% + ${(i - 2) * 12}px)`,
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                boxShadow: `0 0 12px var(--accent)`,
+              }}
+            />
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

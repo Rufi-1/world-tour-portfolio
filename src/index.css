@@ -271,3 +271,49 @@ html {
 .page-section canvas {
   max-height: none !important;
 }
+
+
+.skill-row {
+  cursor: pointer;
+  transition: transform 0.3s ease, padding-left 0.3s ease, background 0.3s ease;
+}
+.skill-row:hover {
+  transform: translateX(12px);
+  padding-left: 20px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%);
+}
+.skill-row:hover .skill-index {
+  color: var(--accent-soft);
+  transform: scale(1.2);
+}
+
+.project-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, background 0.4s ease;
+}
+.project-card:hover {
+  transform: translateX(16px) translateY(-4px);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--accent) 25%, transparent);
+  border-color: var(--accent);
+}
+
+.achievement-list > div {
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  cursor: default;
+}
+.achievement-list > div:hover {
+  transform: translateX(10px);
+  border-color: var(--accent);
+}
+.achievement-list > div:hover span {
+  color: var(--accent-soft);
+}
+
+.timeline-card,
+.experience-card {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.timeline-card:hover,
+.experience-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--accent) 15%, transparent);
+}

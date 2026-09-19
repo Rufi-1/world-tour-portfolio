@@ -20,7 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
+import { useGLTF } from '@react-three/drei';
 import { resume } from '@/data/resume';
 import type { SymbolKind } from '@/components/CountrySymbol';
 import ContactForm from '@/components/ContactForm';
@@ -33,7 +33,13 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-
+// Preload models in the background — downloads while the page loads.
+// The CountryModel component will still only render when its section is in view.
+['india', 'japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
+  (name) => {
+    useGLTF.preload(`/models/${name}.glb`);
+  }
+);
 
 const CountrySymbol = lazy(() => import('@/components/CountrySymbol'));
 
@@ -372,85 +378,84 @@ function App() {
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
-          style={{ '--section-bg': themes.germany.sectionBg } as React.CSSProperties}
+          style={
+            {
+              '--section-bg': themes.germany.sectionBg,
+              position: 'relative',
+              overflow: 'hidden',
+            } as React.CSSProperties
+          }
         >
+          <CountryModel url="/models/germany.glb" variant="side" size={1.5} tiltX={0.3} />
           <div className="section-particles">
             <ParticleSystem theme={themes.germany} active={activeTheme.key === 'germany'} />
           </div>
-          <div className="section-number">04</div>
-          <div className="section-heading">
-            <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
-            <h2>
-              Precision in the
-              <br />
-              <span>details.</span>
-            </h2>
-          </div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div className="section-number">04</div>
+            <div className="section-heading">
+              <p className="eyebrow">GERMANY / SWITZERLAND — JOURNEY</p>
+              <h2>
+                Precision in the
+                <br />
+                <span>details.</span>
+              </h2>
+            </div>
 
-          <div style={{ position: 'relative', zIndex: 2, margin: '3rem 0' }}>
-            <CountryModel
-  url="/models/germany.glb"
-  label="Schwerin Castle · Germany"
-  size={3.7}
-  height={650}
-  tiltX={0.35}
-/>
-          </div>
-
-          <SectionReveal>
-            <div className="journey-grid">
-              <div className="timeline-card">
-                <div className="timeline-top">
-                  <span>EDUCATION</span>
-                  <Database size={18} />
-                </div>
-                {resume.education.map((item) => (
-                  <div className="timeline-item" key={item.year}>
-                    <span>{item.year}</span>
-                    <div>
-                      <h3>{item.title}</h3>
-                      <p>{item.place}</p>
-                      <b>{item.score}</b>
-                    </div>
+            <SectionReveal>
+              <div className="journey-grid">
+                <div className="timeline-card">
+                  <div className="timeline-top">
+                    <span>EDUCATION</span>
+                    <Database size={18} />
                   </div>
-                ))}
-              </div>
-              <div className="experience-card">
-                <div className="timeline-top">
-                  <span>EXPERIENCE / 01</span>
-                  <BriefcaseBusiness size={18} />
-                </div>
-                <div className="experience-title">
-                  <p>{resume.experience.dates}</p>
-                  <h3>{resume.experience.title}</h3>
-                  <span>
-                    {resume.experience.company} · {resume.experience.location}
-                  </span>
-                </div>
-                <ul>
-                  {resume.experience.points.map((point) => (
-                    <li key={point}>
-                      <Check size={15} />
-                      {point}
-                    </li>
+                  {resume.education.map((item) => (
+                    <div className="timeline-item" key={item.year}>
+                      <span>{item.year}</span>
+                      <div>
+                        <h3>{item.title}</h3>
+                        <p>{item.place}</p>
+                        <b>{item.score}</b>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
+                <div className="experience-card">
+                  <div className="timeline-top">
+                    <span>EXPERIENCE / 01</span>
+                    <BriefcaseBusiness size={18} />
+                  </div>
+                  <div className="experience-title">
+                    <p>{resume.experience.dates}</p>
+                    <h3>{resume.experience.title}</h3>
+                    <span>
+                      {resume.experience.company} · {resume.experience.location}
+                    </span>
+                  </div>
+                  <ul>
+                    {resume.experience.points.map((point) => (
+                      <li key={point}>
+                        <Check size={15} />
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div className="learning-strip">
-              <span>CERTIFIED / LEARNING NEXT</span>
-              <div>
-                {resume.certifications.map((item) => (
-                  <p key={item}>{item}</p>
-                ))}
-                {resume.learning.map((item) => (
-                  <p key={item}>
-                    <Sparkles size={13} /> {item}
-                  </p>
-                ))}
+              <div className="learning-strip">
+                <span>CERTIFIED / LEARNING NEXT</span>
+                <div>
+                  {resume.certifications.map((item) => (
+                    <p key={item}>{item}</p>
+                  ))}
+                  {resume.learning.map((item) => (
+                    <p key={item}>
+                      <Sparkles size={13} /> {item}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
-          </SectionReveal>
+            </SectionReveal>
+          </div>
         </ScrollSection>
 
         {/* 05 — CANADA */}
@@ -525,7 +530,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 06 — SWITZERLAND (Matterhorn on the right side, opposite of Taj Mahal) */}
+        {/* 06 — SWITZERLAND */}
         <ScrollSection
           id="beyond"
           className="closing-section section-shell country-themed"
@@ -587,7 +592,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 07 — WORLD (space as background) */}
+        {/* 07 — WORLD */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
