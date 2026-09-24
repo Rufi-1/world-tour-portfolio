@@ -432,3 +432,54 @@ canvas {
     padding: 24px;
   }
 }
+
+/* ============================================ */
+/* FINAL FIXES — Modal scroll + model layering  */
+/* ============================================ */
+
+/* Modal scrolls internally */
+.project-modal {
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.project-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.modal-backdrop {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 800px) {
+  .project-modal {
+    max-height: 88vh !important;
+    padding: 24px;
+  }
+}
+
+/* Ensure side-placed 3D models sit above section backgrounds */
+.journey-section,
+.closing-section,
+.contact-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-section canvas,
+.closing-section canvas,
+.contact-section canvas {
+  position: relative;
+  z-index: 3;
+}

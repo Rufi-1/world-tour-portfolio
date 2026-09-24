@@ -1,4 +1,12 @@
-import { Component, useRef, useState, Suspense, useMemo, type ReactNode } from 'react';
+import {
+  Component,
+  useRef,
+  useState,
+  Suspense,
+  useMemo,
+  useEffect,
+  type ReactNode,
+} from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
@@ -22,7 +30,7 @@ class ModelErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ height: 500, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
+        <div style={{ height: 550, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
           {this.props.label || 'Model unavailable'}
         </div>
       );
@@ -51,7 +59,11 @@ function ModelInner({ url, size, vertical }: InnerProps) {
     const ns = (2 / maxDim) * size;
     return {
       normalizedScale: ns,
-      offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [number, number, number],
+      offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [
+        number,
+        number,
+        number
+      ],
     };
   }, [scene, size]);
 
@@ -59,10 +71,8 @@ function ModelInner({ url, size, vertical }: InnerProps) {
     if (!ref.current) return;
     const d = Math.min(delta, 0.05);
     if (vertical) {
-      // Vertical rotation: spin around X axis (top-to-bottom)
       ref.current.rotation.x += d * 0.15;
     } else {
-      // Horizontal rotation: spin around Y axis (side-to-side)
       ref.current.rotation.y += d * (hovered ? 0.45 : 0.12);
     }
     ref.current.position.y = offset[1] + Math.sin(state.clock.elapsedTime) * 0.08;
@@ -100,9 +110,25 @@ export function CountryModel({
   background = false,
   side = false,
 }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
+      { rootMargin: '400px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   if (prefersReducedMotion) {
     return (
@@ -112,41 +138,27 @@ export function CountryModel({
     );
   }
 
-  // Background variant: absolute full-section, sits behind content
-  if (background) {
-    return (
-      <ModelErrorBoundary label={label}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        >
-          <Canvas
-            camera={{ position: [0, 0, 4], fov: 50 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-          >
-            <ambientLight intensity={2} />
-            <directionalLight position={[5, 5, 5]} intensity={2.5} />
-            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-            <Suspense fallback={null}>
-              <ModelInner url={url} size={size} vertical={vertical} />
-            </Suspense>
-          </Canvas>
-        </div>
-      </ModelErrorBoundary>
-    );
-  }
+  const renderCanvas = () => (
+    <Canvas
+      camera={{ position: [0, 0, 4], fov: 50 }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+    >
+      <ambientLight intensity={2} />
+      <directionalLight position={[5, 5, 5]} intensity={2.5} />
+      <directionalLight position={[-5, -5, -5]} intensity={1.2} />
+      <Suspense fallback={null}>
+        <ModelInner url={url} size={size} vertical={vertical} />
+      </Suspense>
+    </Canvas>
+  );
 
-  // Default: inline block, sits in the normal flow
-    // Side variant: absolutely positioned on the right
+  // SIDE variant — absolutely positioned to the right of the section
   if (side) {
     return (
       <ModelErrorBoundary label={label}>
         <div
+          ref={containerRef}
           style={{
             position: 'absolute',
             right: '2%',
@@ -158,44 +170,39 @@ export function CountryModel({
             zIndex: 3,
           }}
         >
-          <Canvas
-            camera={{ position: [0, 0, 4], fov: 50 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-          >
-            <ambientLight intensity={2} />
-            <directionalLight position={[5, 5, 5]} intensity={2.5} />
-            <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-            <Suspense fallback={null}>
-              <ModelInner url={url} size={size} vertical={vertical} />
-            </Suspense>
-          </Canvas>
+          {visible && renderCanvas()}
         </div>
       </ModelErrorBoundary>
     );
   }
+
+  // BACKGROUND variant — full section, behind content
+  if (background) {
+    return (
+      <ModelErrorBoundary label={label}>
+        <div
+          ref={containerRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        >
+          {visible && renderCanvas()}
+        </div>
+      </ModelErrorBoundary>
+    );
+  }
+
+  // INLINE variant — sits in the normal flow
   return (
     <ModelErrorBoundary label={label}>
       <div
-        style={{
-          width: '100%',
-          height,
-          position: 'relative',
-          zIndex: 3,
-        }}
+        ref={containerRef}
+        style={{ width: '100%', height, position: 'relative', zIndex: 3 }}
       >
-        <Canvas
-          camera={{ position: [0, 0, 4], fov: 50 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
-        >
-          <ambientLight intensity={2} />
-          <directionalLight position={[5, 5, 5]} intensity={2.5} />
-          <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-          <Suspense fallback={null}>
-            <ModelInner url={url} size={size} vertical={vertical} />
-          </Suspense>
-        </Canvas>
+        {visible && renderCanvas()}
         {label && (
           <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
             {label}
