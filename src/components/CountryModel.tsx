@@ -153,7 +153,7 @@ export function CountryModel({
     </Canvas>
   );
 
-  // SIDE variant — absolutely positioned to the right of the section
+  // SIDE — absolutely positioned on the right of the section
   if (side) {
     return (
       <ModelErrorBoundary label={label}>
@@ -161,11 +161,11 @@ export function CountryModel({
           ref={containerRef}
           style={{
             position: 'absolute',
-            right: '2%',
+            right: '4%',
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 'min(50vw, 620px)',
-            height: 'min(50vw, 620px)',
+            width: 'min(38vw, 480px)',
+            height: 'min(38vw, 480px)',
             pointerEvents: 'none',
             zIndex: 3,
           }}
@@ -176,7 +176,7 @@ export function CountryModel({
     );
   }
 
-  // BACKGROUND variant — full section, behind content
+  // BACKGROUND — full section, behind content
   if (background) {
     return (
       <ModelErrorBoundary label={label}>
@@ -195,12 +195,19 @@ export function CountryModel({
     );
   }
 
-  // INLINE variant — sits in the normal flow
+  // INLINE — centered in the flow
   return (
     <ModelErrorBoundary label={label}>
       <div
         ref={containerRef}
-        style={{ width: '100%', height, position: 'relative', zIndex: 3 }}
+        style={{
+          width: '100%',
+          maxWidth: '700px',
+          margin: '0 auto',
+          height,
+          position: 'relative',
+          zIndex: 3,
+        }}
       >
         {visible && renderCanvas()}
         {label && (

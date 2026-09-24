@@ -483,3 +483,87 @@ canvas {
   position: relative;
   z-index: 3;
 }
+
+
+/* ============================================ */
+/* FINAL FIXES                                  */
+/* ============================================ */
+
+/* Modal — uses more screen height, always scrollable */
+.project-modal {
+  max-height: 92vh !important;
+  min-height: 50vh;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.project-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.modal-backdrop {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Short browser windows — modal takes even more space */
+@media (max-height: 700px) {
+  .project-modal {
+    max-height: 95vh !important;
+    padding: 20px;
+    min-height: auto;
+  }
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+  .project-modal {
+    max-height: 90vh !important;
+    padding: 24px;
+  }
+}
+
+/* Section layers — models always above background, below content */
+.journey-section,
+.closing-section,
+.contact-section,
+.country-section,
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+canvas {
+  position: relative;
+  z-index: 3;
+}
+
+.section-particles {
+  z-index: 1 !important;
+}
+
+.country-themed::before {
+  z-index: 0 !important;
+}
+
+.hero-copy,
+.section-heading,
+.section-number,
+.about-layout,
+.journey-grid,
+.skills-grid,
+.projects-list,
+.closing-columns,
+.contact-copy {
+  position: relative;
+  z-index: 6;
+}
