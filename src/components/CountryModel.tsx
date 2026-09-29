@@ -11,7 +11,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
 
-useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+useGLTF.setDecoderPath('/draco/');
 
 class ModelErrorBoundary extends Component<
   { children: ReactNode; label?: string },
