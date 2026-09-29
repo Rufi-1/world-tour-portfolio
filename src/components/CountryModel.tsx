@@ -30,7 +30,17 @@ class ModelErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ height: 550, display: 'grid', placeItems: 'center', opacity: 0.35 }}>
+        <div
+          style={{
+            height: 650,
+            width: '100%',
+            display: 'grid',
+            placeItems: 'center',
+            opacity: 0.4,
+            fontSize: '0.9rem',
+            color: 'var(--muted)',
+          }}
+        >
           {this.props.label || 'Model unavailable'}
         </div>
       );
@@ -105,7 +115,7 @@ export function CountryModel({
   url,
   label,
   size = 1,
-  height = 550,
+  height = 650,
   vertical = false,
   background = false,
   side = false,
@@ -132,7 +142,15 @@ export function CountryModel({
 
   if (prefersReducedMotion) {
     return (
-      <div style={{ height, display: 'grid', placeItems: 'center', opacity: 0.5 }}>
+      <div
+        style={{
+          height,
+          width: '100%',
+          display: 'grid',
+          placeItems: 'center',
+          opacity: 0.5,
+        }}
+      >
         {label}
       </div>
     );
@@ -142,7 +160,13 @@ export function CountryModel({
     <Canvas
       camera={{ position: [0, 0, 4], fov: 50 }}
       dpr={[1, 1.5]}
-      gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
+      gl={{
+        antialias: false,
+        alpha: true,
+        preserveDrawingBuffer: false,
+        powerPreference: 'default',
+      }}
+      style={{ width: '100%', height: '100%', display: 'block' }}
     >
       <ambientLight intensity={2} />
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
@@ -153,7 +177,7 @@ export function CountryModel({
     </Canvas>
   );
 
-  // SIDE — absolutely positioned on the right of the section
+  // SIDE — absolutely positioned on the right
   if (side) {
     return (
       <ModelErrorBoundary label={label}>
@@ -161,11 +185,11 @@ export function CountryModel({
           ref={containerRef}
           style={{
             position: 'absolute',
-            right: '4%',
+            right: '2%',
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 'min(38vw, 480px)',
-            height: 'min(38vw, 480px)',
+            width: 'min(42vw, 520px)',
+            height: 'min(42vw, 520px)',
             pointerEvents: 'none',
             zIndex: 3,
           }}
@@ -195,23 +219,23 @@ export function CountryModel({
     );
   }
 
-  // INLINE — centered in the flow
+  // INLINE — centered, fixed pixel height
   return (
     <ModelErrorBoundary label={label}>
       <div
         ref={containerRef}
         style={{
           width: '100%',
-          maxWidth: '700px',
+          maxWidth: '750px',
           margin: '0 auto',
-          height,
+          height: `${height}px`,
           position: 'relative',
           zIndex: 3,
         }}
       >
         {visible && renderCanvas()}
         {label && (
-          <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7 }}>
+          <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.7, marginTop: '8px' }}>
             {label}
           </p>
         )}

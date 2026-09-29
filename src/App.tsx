@@ -188,7 +188,7 @@ function App() {
       )}
 
       <main>
-        {/* 01 — INDIA (side model) */}
+        {/* 01 — INDIA */}
         <ScrollSection
           id="origin"
           className="hero section-shell country-themed"
@@ -200,7 +200,7 @@ function App() {
             } as React.CSSProperties
           }
         >
-          <CountryModel url="/models/india.glb" side size={1.3} />
+          <CountryModel url="/models/india.glb" side size={1.4} />
           <div className="section-particles">
             <ParticleSystem theme={themes.india} active={activeTheme.key === 'india'} />
           </div>
@@ -353,7 +353,7 @@ function App() {
           </SectionReveal>
         </ScrollSection>
 
-        {/* 04 — GERMANY (inline, centered) */}
+        {/* 04 — GERMANY */}
         <ScrollSection
           id="journey"
           className="journey-section section-shell country-themed"
@@ -441,13 +441,7 @@ function App() {
         <ScrollSection
           id="work"
           className="country-section canada-section section-shell country-themed"
-          style={
-            {
-              '--section-bg': themes.canada.sectionBg,
-              position: 'relative',
-              overflow: 'hidden',
-            } as React.CSSProperties
-          }
+          style={{ '--section-bg': themes.canada.sectionBg } as React.CSSProperties}
         >
           <FallingMapleLeaves active={activeTheme.key === 'canada'} />
 
@@ -469,6 +463,15 @@ function App() {
               <p className="heading-aside">
                 Technology only matters when it makes something clearer, kinder, or more possible.
               </p>
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 6, margin: '3rem 0' }}>
+              <CountryModel
+                url="/models/canada.glb"
+                label="Canada · Selected Work"
+                size={1.5}
+                height={650}
+              />
             </div>
 
             <SectionReveal>
@@ -500,7 +503,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 06 — SWITZERLAND (side model) */}
+        {/* 06 — SWITZERLAND */}
         <ScrollSection
           id="beyond"
           className="closing-section section-shell country-themed"
@@ -562,7 +565,7 @@ function App() {
           </div>
         </ScrollSection>
 
-        {/* 07 — WORLD (space background) */}
+        {/* 07 — WORLD */}
         <ScrollSection
           id="connect"
           className="contact-section section-shell country-themed"
@@ -674,10 +677,24 @@ function App() {
 
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
+    const scrollY = window.scrollY;
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+
     return () => {
-      document.body.style.overflow = originalStyle;
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
     };
   }, []);
 

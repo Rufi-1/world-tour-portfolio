@@ -567,3 +567,35 @@ canvas {
   position: relative;
   z-index: 6;
 }
+
+/* Modal scrolls internally — page behind stays still */
+.modal-backdrop {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.project-modal {
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.project-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+@media (max-height: 700px) {
+  .project-modal {
+    max-height: 95vh !important;
+    padding: 20px;
+  }
+}
