@@ -33,9 +33,15 @@ import { SectionReveal } from './components/SectionReveal';
 import { CountryModel } from './components/CountryModel';
 import { FallingMapleLeaves } from './components/FallingMapleLeaves';
 
-['india', 'japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
-  (name) => {
-    useGLTF.preload(`/models/${name}.glb`);
+// Load India first, on its own, so it appears as fast as possible
+useGLTF.preload('/models/india.glb');
+
+// Then quietly load the rest one at a time, after India has had a head start
+['japan', 'china', 'germany', 'canada', 'switzerland', 'maple_leaf', 'space'].forEach(
+  (name, i) => {
+    window.setTimeout(() => {
+      useGLTF.preload(`/models/${name}.glb`);
+    }, 4000 + i * 1200);
   }
 );
 
