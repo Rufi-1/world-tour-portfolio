@@ -700,8 +700,9 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
 
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
-      <motion.div
+            <motion.div
         className="project-modal"
+        data-lenis-prevent
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-title"
