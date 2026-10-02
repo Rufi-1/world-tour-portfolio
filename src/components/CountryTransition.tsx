@@ -1,95 +1,104 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-type Props = {
-  activeTheme: string;
+type Stamp = { index: string; name: string };
+
+// One passport stamp per country section (keys match the theme keys in themes.ts)
+const STAMPS: Record<string, Stamp> = {
+  india: { index: 'ENTRY No. 01', name: 'India' },
+  japan: { index: 'ENTRY No. 02', name: 'Japan' },
+  china: { index: 'ENTRY No. 03', name: 'China' },
+  germany: { index: 'ENTRY No. 04', name: 'Germany' },
+  canada: { index: 'ENTRY No. 05', name: 'Canada' },
+  swissBeyond: { index: 'ENTRY No. 06', name: 'Switzerland' },
+  world: { index: 'FINAL STOP', name: 'World' },
 };
 
-export default function CountryTransition({ activeTheme }: Props) {
-  const [showTransition, setShowTransition] = useState(false);
-  const [transitionKey, setTransitionKey] = useState(0);
+const SHOW_DELAY = 250; // short wait, so scrolling quickly past a section doesn't flash a stamp
+const VISIBLE_MS = 2200; // how long the stamp stays on screen
+const FADE_MS = 600; // fade-out time before it is removed
+
+export default function CountryTransition({ activeTheme }: { activeTheme: string }) {
+  const [stamp, setStamp] = useState<Stamp | null>(null);
+  const [hidden, setHidden] = useState(false);
+  const previous = useRef<string | null>(null);
+  const timers = useRef<number[]>([]);
+
+  const clearTimers = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+  };
 
   useEffect(() => {
-    // Trigger a brief overlay whenever the theme changes
-    setShowTransition(true);
-    setTransitionKey((k) => k + 1);
-    const timer = setTimeout(() => setShowTransition(false), 900);
-    return () => clearTimeout(timer);
+    // TEMPORARY: shows in the browser console each time the section theme changes
+    console.log('[CountryTransition] theme ->', activeTheme);
+
+    // the first value is just the starting section, so no stamp for it
+    if (previous.current === null) {
+      previous.current = activeTheme;
+      return;
+    }
+    if (previous.current === activeTheme) return;
+    previous.current = activeTheme;
+
+    clearTimers();
+    const next = STAMPS[activeTheme];
+
+    if (!next) {
+      // moved to a section with no stamp: fade out any stamp still showing
+      setHidden(true);
+      timers.current.push(window.setTimeout(() => setStamp(null), FADE_MS));
+      return;
+    }
+
+    timers.current.push(
+      window.setTimeout(() => {
+        setHidden(false);
+        setStamp(next);
+      }, SHOW_DELAY),
+      window.setTimeout(() => setHidden(true), SHOW_DELAY + VISIBLE_MS),
+      window.setTimeout(() => setStamp(null), SHOW_DELAY + VISIBLE_MS + FADE_MS)
+    );
   }, [activeTheme]);
 
+  // clean up timers if the component is ever removed
+  useEffect(() => clearTimers, []);
+
+  if (!stamp) return null;
+
   return (
-    <AnimatePresence>
-      {showTransition && (
-        <motion.div
-          key={transitionKey}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            pointerEvents: 'none',
-            zIndex: 40,
-          }}
-          aria-hidden="true"
+    <div
+      key={stamp.name}
+      className={`country-transition ${hidden ? 'hidden' : 'visible'}`}
+      aria-hidden="true"
+    >
+      <div className="transition-plane">
+        <span
+          className="plane-trail"
+          style={{ background: 'linear-gradient(to left, var(--accent), transparent)' }}
+        />
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ transform: 'rotate(45deg)' }}
         >
-          {/* Vertical sweep line */}
-          <motion.div
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            exit={{ scaleY: 0 }}
-            transition={{ duration: 0.6, ease: [0.83, 0, 0.17, 1] }}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(180deg, transparent 0%, var(--accent) 50%, transparent 100%)`,
-              opacity: 0.12,
-              transformOrigin: 'top',
-            }}
-          />
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </div>
 
-          {/* Horizontal sweep line moving left-to-right */}
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: '100%' }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.9, ease: [0.83, 0, 0.17, 1] }}
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: 0,
-              width: '100%',
-              height: '2px',
-              background: `linear-gradient(90deg, transparent, var(--accent), transparent)`,
-              boxShadow: `0 0 20px var(--accent), 0 0 40px var(--accent)`,
-            }}
-          />
-
-          {/* Fading dots trailing */}
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ x: '-10%', opacity: 0 }}
-              animate={{ x: '110%', opacity: [0, 1, 0] }}
-              transition={{
-                duration: 1.0,
-                delay: i * 0.05,
-                ease: 'easeOut',
-              }}
-              style={{
-                position: 'absolute',
-                top: `calc(50% + ${(i - 2) * 12}px)`,
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: 'var(--accent)',
-                boxShadow: `0 0 12px var(--accent)`,
-              }}
-            />
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <div className="transition-stamp">
+        <div className="stamp-border">
+          <span className="stamp-index">{stamp.index}</span>
+          <strong style={stamp.name.length > 7 ? { fontSize: '15px' } : undefined}>{stamp.name}</strong>
+          <small>APPROVED</small>
+        </div>
+      </div>
+    </div>
   );
 }
