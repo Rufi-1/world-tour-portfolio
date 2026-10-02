@@ -53,15 +53,18 @@ type InnerProps = {
   url: string;
   size: number;
   vertical: boolean;
+  rotationY: number;
 };
 
-function ModelInner({ url, size, vertical }: InnerProps) {
+function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
   const { scene } = useGLTF(url);
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
 
   const { normalizedScale, offset } = useMemo(() => {
+    scene.rotation.y = rotationY;
+    scene.updateMatrixWorld(true);
     const box = new Box3().setFromObject(scene);
     const center = box.getCenter(new Vector3());
     const sizeVec = box.getSize(new Vector3());
@@ -75,7 +78,7 @@ function ModelInner({ url, size, vertical }: InnerProps) {
         number
       ],
     };
-  }, [scene, size]);
+  }, [scene, size, rotationY]);
 
   useFrame((state, delta) => {
     if (!ref.current) return;
@@ -109,6 +112,7 @@ type Props = {
   vertical?: boolean;
   background?: boolean;
   side?: boolean;
+  rotationY?: number;
 };
 
 export function CountryModel({
@@ -119,6 +123,7 @@ export function CountryModel({
   vertical = false,
   background = false,
   side = false,
+  rotationY = 0,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -172,7 +177,7 @@ export function CountryModel({
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
       <directionalLight position={[-5, -5, -5]} intensity={1.2} />
       <Suspense fallback={null}>
-        <ModelInner url={url} size={size} vertical={vertical} />
+        <ModelInner url={url} size={size} vertical={vertical} rotationY={rotationY} />
       </Suspense>
     </Canvas>
   );

@@ -384,6 +384,7 @@ function App() {
               label="Schwerin Castle · Germany"
               size={1.7}
               height={650}
+              rotationY={Math.PI}
             />
           </div>
 
@@ -706,7 +707,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
 
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
-            <motion.div
+      <motion.div
         className="project-modal"
         data-lenis-prevent
         role="dialog"
