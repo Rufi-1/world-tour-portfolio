@@ -132,6 +132,36 @@ function App() {
     };
   }, []);
 
+  // Fade-and-rise entrance for each country section as it scrolls into view
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>('.country-themed:not(#origin)')
+    );
+    if (!sections.length) return;
+
+    document.documentElement.classList.add('js-reveal');
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute('data-inview', 'true');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    sections.forEach((section) => io.observe(section));
+
+    return () => {
+      io.disconnect();
+      document.documentElement.classList.remove('js-reveal');
+    };
+  }, []);
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setIsMenuOpen(false);
