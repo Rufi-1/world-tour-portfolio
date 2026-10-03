@@ -600,16 +600,85 @@ canvas {
   }
 }
 
-/* Section entrance: each country section fades in and rises gently as it scrolls into view.
-   The "js-reveal" class and the "data-inview" attribute are added by a small effect in App.tsx. */
+/* ============================================================
+   Section entrances: every country section reveals in its own way,
+   so scrolling feels like travelling from place to place.
+   (The "js-reveal" class and the "data-inview" attribute are set
+   by a small effect in App.tsx.)
+   ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  .js-reveal .country-themed:not(#origin) {
+  /* hidden until the section scrolls into view */
+  .js-reveal .country-themed:not(#origin):not([data-inview]) {
     opacity: 0;
-    transform: translateY(120px);
-    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .js-reveal .country-themed:not(#origin)[data-inview] {
-    opacity: 1;
-    transform: none;
+  /* shared timing; the shape is chosen per section below */
+  .js-reveal .country-themed[data-inview]:not(#origin) {
+    animation-duration: 1.3s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: backwards;
+  }
+
+  .js-reveal #about[data-inview]   { animation-name: reveal-sun; }      /* Japan: rising sun */
+  .js-reveal #skills[data-inview]  { animation-name: reveal-scroll; }   /* China: scroll unrolls downward */
+  .js-reveal #journey[data-inview] { animation-name: reveal-bridge; }   /* Germany: wipes in from the left */
+  .js-reveal #work[data-inview]    { animation-name: reveal-rise; }     /* Canada: soft rise and settle */
+  .js-reveal #beyond[data-inview]  { animation-name: reveal-ridge; }    /* Switzerland: mountain ridge sweeps down */
+  .js-reveal #connect[data-inview] { animation-name: reveal-settle; }   /* Contact: slow zoom-out settle */
+
+  @keyframes reveal-sun {
+    from { opacity: 0; clip-path: circle(0% at 80% 8%); }
+    to   { opacity: 1; clip-path: circle(150% at 80% 8%); }
+  }
+  @keyframes reveal-scroll {
+    from { opacity: 0; clip-path: inset(0% 0% 100% 0%); }
+    to   { opacity: 1; clip-path: inset(0% 0% 0% 0%); }
+  }
+  @keyframes reveal-bridge {
+    from { opacity: 0; transform: translateX(-60px); clip-path: inset(0% 100% 0% 0%); }
+    to   { opacity: 1; transform: none; clip-path: inset(0% 0% 0% 0%); }
+  }
+  @keyframes reveal-rise {
+    from { opacity: 0; transform: translateY(80px) scale(0.94); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes reveal-ridge {
+    from {
+      opacity: 0;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 6%, 82% 12%, 62% 4%, 40% 14%, 22% 6%, 0% 10%);
+    }
+    to {
+      opacity: 1;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 82% 100%, 62% 100%, 40% 100%, 22% 100%, 0% 100%);
+    }
+  }
+  @keyframes reveal-settle {
+    from { opacity: 0; transform: scale(1.08); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* ============================================================
+   Phone / tablet layout for the 3D models
+   (the classes come from CountryModel.tsx)
+   ============================================================ */
+@media (max-width: 800px) {
+  /* centered models: shorter, so they don't fill an entire phone screen */
+  .country-model--inline {
+    height: min(650px, 115vw) !important;
+  }
+  /* models placed beside the text (India, Switzerland): smaller, tucked behind the heading */
+  .country-model--side {
+    width: 52vw !important;
+    height: 52vw !important;
+    right: -6% !important;
+    top: 12% !important;
+    transform: none !important;
+    opacity: 0.55;
+  }
+}
+@media (max-width: 500px) {
+  .country-model--side {
+    width: 60vw !important;
+    height: 60vw !important;
   }
 }

@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useCursor } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
 
@@ -58,6 +58,10 @@ type InnerProps = {
 
 function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
   const { scene } = useGLTF(url);
+  const viewportWidth = useThree((state) => state.viewport.width);
+  const canvasWidth = useThree((state) => state.size.width);
+  // On narrow screens (phones) shrink the model so it fits inside the canvas instead of being cropped
+  const fitSize = canvasWidth < 600 ? Math.min(size, viewportWidth * 0.46) : size;
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
@@ -69,7 +73,7 @@ function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
     const center = box.getCenter(new Vector3());
     const sizeVec = box.getSize(new Vector3());
     const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z) || 1;
-    const ns = (2 / maxDim) * size;
+    const ns = (2 / maxDim) * fitSize;
     return {
       normalizedScale: ns,
       offset: [-center.x * ns, -center.y * ns, -center.z * ns] as [
@@ -78,7 +82,7 @@ function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
         number
       ],
     };
-  }, [scene, size, rotationY]);
+  }, [scene, fitSize, rotationY]);
 
   useFrame((state, delta) => {
     if (!ref.current) return;
@@ -188,6 +192,7 @@ export function CountryModel({
       <ModelErrorBoundary label={label}>
         <div
           ref={containerRef}
+          className="country-model country-model--side"
           style={{
             position: 'absolute',
             right: '2%',
@@ -211,6 +216,7 @@ export function CountryModel({
       <ModelErrorBoundary label={label}>
         <div
           ref={containerRef}
+          className="country-model country-model--bg"
           style={{
             position: 'absolute',
             inset: 0,
@@ -229,6 +235,7 @@ export function CountryModel({
     <ModelErrorBoundary label={label}>
       <div
         ref={containerRef}
+        className="country-model country-model--inline"
         style={{
           width: '100%',
           maxWidth: '750px',
