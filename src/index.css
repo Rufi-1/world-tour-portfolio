@@ -695,3 +695,25 @@ canvas {
 @keyframes model-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   Phone layout, round 2 (from the screen recordings)
+   ============================================================ */
+@media (max-width: 800px) {
+  /* India: the Taj Mahal sits below the text instead of on top of it */
+  #origin .country-model--side {
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    order: 2;
+    width: min(78vw, 340px) !important;
+    height: min(78vw, 340px) !important;
+    margin: 28px auto 0 !important;
+    opacity: 1;
+  }
+  /* wide models (Great Wall, Brandenburg Gate) don't need a tall canvas */
+  #skills .country-model--inline,
+  #journey .country-model--inline {
+    height: 62vw !important;
+  }
+}

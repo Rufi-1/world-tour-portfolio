@@ -68,7 +68,7 @@ const sectionSymbols: {
   { section: 'origin', kind: 'india', label: 'Taj Mahal · India', palette: '#FF9933' },
   { section: 'about', kind: 'japan', label: 'Torii Gate · Japan', palette: '#BC002D' },
   { section: 'skills', kind: 'china', label: 'Great Wall · China', palette: '#DE2910' },
-  { section: 'journey', kind: 'germany', label: 'Schwerin Castle · Germany', palette: '#FFCE00' },
+  { section: 'journey', kind: 'germany', label: 'Brandenburg Gate · Germany', palette: '#FFCE00' },
   { section: 'work', kind: 'canada', label: 'Maple Leaf · Canada', palette: '#FF0000' },
   { section: 'beyond', kind: 'swissBeyond', label: 'Matterhorn · Switzerland', palette: '#D52B1E' },
   { section: 'connect', kind: 'world', label: 'Globe · World', palette: '#4A90D9' },
@@ -381,7 +381,7 @@ function App() {
           <div style={{ position: 'relative', zIndex: 6, margin: '3rem 0' }}>
             <CountryModel
               url="/models/germany.glb"
-              label="Schwerin Castle · Germany"
+              label="Brandenburg Gate · Germany"
               size={1.7}
               height={650}
               rotationY={Math.PI}
