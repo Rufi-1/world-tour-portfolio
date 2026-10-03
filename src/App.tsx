@@ -146,13 +146,13 @@ function App() {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
             entry.target.setAttribute('data-inview', 'true');
             io.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0, rootMargin: '0px 0px -35% 0px' }
     );
     sections.forEach((section) => io.observe(section));
 
