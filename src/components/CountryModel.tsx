@@ -54,14 +54,19 @@ type InnerProps = {
   size: number;
   vertical: boolean;
   rotationY: number;
+  animate: boolean;
 };
 
-function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
-  const { scene } = useGLTF(url);
+function ModelInner({ url, size, vertical, rotationY, animate }: InnerProps) {
+  const { scene: original } = useGLTF(url);
+  // Every canvas works on its own copy of the model (geometry and textures are shared, so this is cheap).
+  // That way, re-mounting the canvas never inherits an old scale, rotation or position.
+  const scene = useMemo(() => original.clone(true), [original]);
   const viewportWidth = useThree((state) => state.viewport.width);
   const canvasWidth = useThree((state) => state.size.width);
   // On narrow screens (phones) shrink the model so it fits inside the canvas instead of being cropped
-  const fitSize = canvasWidth < 600 ? Math.min(size, viewportWidth * 0.46) : size;
+  const fitSize =
+    canvasWidth > 0 && canvasWidth < 600 ? Math.min(size, viewportWidth * 0.46) : size;
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
@@ -86,6 +91,11 @@ function ModelInner({ url, size, vertical, rotationY }: InnerProps) {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
+    if (!animate) {
+      // reduced-motion: show the model still, with no spinning or floating
+      ref.current.scale.setScalar(normalizedScale);
+      return;
+    }
     const d = Math.min(delta, 0.05);
     if (vertical) {
       ref.current.rotation.x += d * 0.15;
@@ -140,33 +150,16 @@ export function CountryModel({
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { rootMargin: '400px 0px' }
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: '300px 0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  if (prefersReducedMotion) {
-    return (
-      <div
-        style={{
-          height,
-          width: '100%',
-          display: 'grid',
-          placeItems: 'center',
-          opacity: 0.5,
-        }}
-      >
-        {label}
-      </div>
-    );
-  }
-
   const renderCanvas = () => (
     <Canvas
+      frameloop={prefersReducedMotion ? 'demand' : 'always'}
       camera={{ position: [0, 0, 4], fov: 50 }}
       dpr={[1, 1.5]}
       gl={{
@@ -181,7 +174,13 @@ export function CountryModel({
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
       <directionalLight position={[-5, -5, -5]} intensity={1.2} />
       <Suspense fallback={null}>
-        <ModelInner url={url} size={size} vertical={vertical} rotationY={rotationY} />
+        <ModelInner
+          url={url}
+          size={size}
+          vertical={vertical}
+          rotationY={rotationY}
+          animate={!prefersReducedMotion}
+        />
       </Suspense>
     </Canvas>
   );
