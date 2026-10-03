@@ -651,11 +651,12 @@ canvas {
    ============================================================ */
 @media (max-width: 800px) {
   /* first section: no more full-screen height with big empty gaps above and below */
-  .hero {
-    min-height: auto !important;
-    align-content: start;
-    padding-top: 112px !important;
-    padding-bottom: 64px !important;
+  #origin.hero {
+    min-height: 0 !important;
+    height: auto !important;
+    align-content: start !important;
+    padding-top: 108px !important;
+    padding-bottom: 56px !important;
     gap: 0 !important;
   }
   .hero-meta { margin-top: 40px !important; }

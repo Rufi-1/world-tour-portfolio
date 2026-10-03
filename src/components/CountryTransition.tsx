@@ -62,6 +62,7 @@ const STAMPS: Record<string, Stamp> = {
 };
 
 const SHOW_DELAY = 250; // short wait, so scrolling quickly past a section doesn't flash a stamp
+const INTRO_MS = 1400; // on page load, wait until the loading screen has gone before the first stamp
 const VISIBLE_MS = 2600; // how long the overlay stays on screen
 const FADE_MS = 600; // fade-out time before it is removed
 
@@ -114,7 +115,7 @@ function VeilLayer({ veil }: { veil: Veil }) {
 export default function CountryTransition({ activeTheme }: { activeTheme: string }) {
   const [stamp, setStamp] = useState<Stamp | null>(null);
   const [hidden, setHidden] = useState(false);
-  const previous = useRef<string | null>(null);
+  const mountedAt = useRef(Date.now());
   const timers = useRef<number[]>([]);
 
   const clearTimers = () => {
@@ -123,14 +124,6 @@ export default function CountryTransition({ activeTheme }: { activeTheme: string
   };
 
   useEffect(() => {
-    // the first value is just the starting section, so no transition for it
-    if (previous.current === null) {
-      previous.current = activeTheme;
-      return;
-    }
-    if (previous.current === activeTheme) return;
-    previous.current = activeTheme;
-
     clearTimers();
     const next = STAMPS[activeTheme];
 
@@ -141,13 +134,16 @@ export default function CountryTransition({ activeTheme }: { activeTheme: string
       return;
     }
 
+    // right after the page loads, wait for the loading screen to finish
+    const wait = Math.max(SHOW_DELAY, INTRO_MS - (Date.now() - mountedAt.current));
+
     timers.current.push(
       window.setTimeout(() => {
         setHidden(false);
         setStamp(next);
-      }, SHOW_DELAY),
-      window.setTimeout(() => setHidden(true), SHOW_DELAY + VISIBLE_MS),
-      window.setTimeout(() => setStamp(null), SHOW_DELAY + VISIBLE_MS + FADE_MS)
+      }, wait),
+      window.setTimeout(() => setHidden(true), wait + VISIBLE_MS),
+      window.setTimeout(() => setStamp(null), wait + VISIBLE_MS + FADE_MS)
     );
   }, [activeTheme]);
 
