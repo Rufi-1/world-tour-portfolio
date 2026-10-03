@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, useCursor } from '@react-three/drei';
+import { useGLTF, useCursor, Html } from '@react-three/drei';
 import { Box3, Vector3, type Group } from 'three';
 
 useGLTF.setDecoderPath('/draco/');
@@ -173,7 +173,13 @@ export function CountryModel({
       <ambientLight intensity={2} />
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
       <directionalLight position={[-5, -5, -5]} intensity={1.2} />
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <Html center>
+            <div className="model-loading" />
+          </Html>
+        }
+      >
         <ModelInner
           url={url}
           size={size}

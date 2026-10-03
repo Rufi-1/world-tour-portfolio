@@ -682,3 +682,16 @@ canvas {
     height: 60vw !important;
   }
 }
+
+/* small spinner shown while a 3D model is still downloading */
+.model-loading {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid rgba(128, 128, 128, 0.25);
+  border-top-color: var(--accent, #ff9933);
+  animation: model-spin 0.9s linear infinite;
+}
+@keyframes model-spin {
+  to { transform: rotate(360deg); }
+}

@@ -61,7 +61,8 @@ const STAMPS: Record<string, Stamp> = {
   world: { index: 'FINAL STOP', name: 'World', veil: { kind: 'ring' } },
 };
 
-const SHOW_DELAY = 250; // short wait, so scrolling quickly past a section doesn't flash a stamp
+const SHOW_DELAY = 600; // the section must stay current this long before its transition plays
+const COOLDOWN_MS = 8000; // a country that just played will not play again for this long
 const INTRO_MS = 1400; // on page load, wait until the loading screen has gone before the first stamp
 const VISIBLE_MS = 2600; // how long the overlay stays on screen
 const FADE_MS = 600; // fade-out time before it is removed
@@ -116,39 +117,47 @@ export default function CountryTransition({ activeTheme }: { activeTheme: string
   const [stamp, setStamp] = useState<Stamp | null>(null);
   const [hidden, setHidden] = useState(false);
   const mountedAt = useRef(Date.now());
-  const timers = useRef<number[]>([]);
+  const lastPlayed = useRef<Record<string, number>>({});
+  const waiting = useRef<number[]>([]); // timers for a transition that has not appeared yet
+  const showing = useRef<number[]>([]); // timers for the transition that is on screen
 
-  const clearTimers = () => {
-    timers.current.forEach((t) => window.clearTimeout(t));
-    timers.current = [];
+  const clearAll = () => {
+    waiting.current.forEach((t) => window.clearTimeout(t));
+    showing.current.forEach((t) => window.clearTimeout(t));
+    waiting.current = [];
+    showing.current = [];
   };
 
   useEffect(() => {
-    clearTimers();
+    // a newer section replaces any transition that was still waiting to appear
+    waiting.current.forEach((t) => window.clearTimeout(t));
+    waiting.current = [];
+
     const next = STAMPS[activeTheme];
+    if (!next) return; // no transition for this section; one already on screen finishes by itself
 
-    if (!next) {
-      // moved to a section with no stamp: fade out anything still showing
-      setHidden(true);
-      timers.current.push(window.setTimeout(() => setStamp(null), FADE_MS));
-      return;
-    }
+    // phones can flip between two neighbouring sections while scrolling: don't replay the same country
+    if (Date.now() - (lastPlayed.current[activeTheme] ?? 0) < COOLDOWN_MS) return;
 
-    // right after the page loads, wait for the loading screen to finish
+    // right after the page loads, also wait for the loading screen to finish
     const wait = Math.max(SHOW_DELAY, INTRO_MS - (Date.now() - mountedAt.current));
 
-    timers.current.push(
+    waiting.current.push(
       window.setTimeout(() => {
+        lastPlayed.current[activeTheme] = Date.now();
+        showing.current.forEach((t) => window.clearTimeout(t));
         setHidden(false);
         setStamp(next);
-      }, wait),
-      window.setTimeout(() => setHidden(true), wait + VISIBLE_MS),
-      window.setTimeout(() => setStamp(null), wait + VISIBLE_MS + FADE_MS)
+        showing.current = [
+          window.setTimeout(() => setHidden(true), VISIBLE_MS),
+          window.setTimeout(() => setStamp(null), VISIBLE_MS + FADE_MS),
+        ];
+      }, wait)
     );
   }, [activeTheme]);
 
   // clean up timers if the component is ever removed
-  useEffect(() => clearTimers, []);
+  useEffect(() => clearAll, []);
 
   if (!stamp) return null;
 
