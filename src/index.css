@@ -599,3 +599,26 @@ canvas {
     padding: 20px;
   }
 }
+
+/* Section entrance: each country section fades in and rises gently as you scroll to it.
+   Pure CSS. Browsers that don't support it simply skip the effect. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .country-themed:not(#origin) {
+      animation: section-enter linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+
+    @keyframes section-enter {
+      from {
+        opacity: 0;
+        transform: translateY(70px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
