@@ -7,7 +7,7 @@ export const resume = {
   location: 'Mysuru, Karnataka, India',
 
   objective:
-    'Motivated Bachelor of Computer Applications graduate with a strong foundation in Python, SQL, data analytics, and web development. Hands-on experience in data cleaning, statistical analysis, and anomaly detection through a Data Analytics internship, complemented by independent experience building AI-powered applications with REST API integrations and Django backend development. Eager to contribute as a fresher in data analytics or software development while continuing to build expertise in modern tools and frameworks.',
+    'BCA graduate and hands-on developer building multilingual AI applications, data analytics tools, and full-stack web projects. Currently training in Full Stack Development and Data Science at QSpiders, Mysuru.',
 
   education: [
     {
@@ -31,13 +31,37 @@ export const resume = {
   ],
 
   skills: [
-    { label: 'Programming', value: 'Python (Advanced), C, JavaScript' },
-    { label: 'Web Development', value: 'HTML, CSS, JavaScript, Django REST APIs' },
-    { label: 'Database', value: 'SQL, DBMS' },
-    { label: 'Analysis', value: 'Pandas, NumPy, Matplotlib, Seaborn, Excel (Pivot Tables, ToolPak)' },
-    { label: 'Statistics', value: 'Descriptive & Inferential Stats (t-Test, ANOVA, Chi-Square, IQR, Correlation)' },
-    { label: 'Tools', value: 'Git, GitHub, Streamlit, Google AI Studio, VS Code' },
-    { label: 'Core', value: 'Data Cleaning, Root-Cause Analysis, API Integration, Documentation' },
+    { label: 'Programming', value: 'Python, JavaScript, SQL, C' },
+    {
+      label: 'Frontend',
+      value:
+        'HTML5, CSS3, JavaScript, React.js, Responsive Design, Component-Based Development, Form Handling, Client-Side Validation, DOM Manipulation',
+    },
+    {
+      label: 'Backend',
+      value: 'Django, Django REST Framework, REST APIs, API Integration, JSON, Backend Application Logic',
+    },
+    {
+      label: 'Generative AI & RAG',
+      value:
+        'RAG Pipelines, Vector Databases, Embeddings, Semantic Retrieval, Context Grounding, Prompt Engineering, LLM API Integration, Multilingual AI Workflows',
+    },
+    {
+      label: 'AI Tools & Models',
+      value: 'Groq API, Llama 3.3, Gemini API, Whisper, gTTS, Google Translate API, Google AI Studio, Streamlit',
+    },
+    {
+      label: 'Data Analysis',
+      value:
+        'Pandas, NumPy, SciPy, Matplotlib, Seaborn, Excel (Pivot Tables, ToolPak), Data Cleaning, EDA, Feature Engineering, Data Validation, Anomaly Detection, Root-Cause Analysis',
+    },
+    {
+      label: 'Statistics',
+      value:
+        'Descriptive & Inferential Stats, Correlation, Covariance, Hypothesis Testing (t-test, ANOVA, Chi-Square, Shapiro-Wilk), IQR Method',
+    },
+    { label: 'Databases', value: 'SQL, DBMS, SQLite, JSON-Based Data Handling' },
+    { label: 'Tools', value: 'Git, GitHub, VS Code, Jupyter Notebook, Streamlit, Google AI Studio' },
   ],
 
   experience: {
@@ -46,29 +70,42 @@ export const resume = {
     company: 'Spatialhawk Geo-Informatics Pvt. Ltd.',
     location: 'Mysuru',
     points: [
-      'Cleaned and standardized structured datasets using Python (Pandas) — handled missing values and removed duplicates.',
-      'Detected data anomalies using boxplots and the IQR method, documenting root causes for reliability.',
-      'Wrote SQL queries and built Pivot Tables/Excel reports for descriptive statistics and stakeholder reporting.',
+      'Cleaned and standardized structured datasets using Python and Pandas — handled missing values, removed duplicates, and identified data inconsistencies.',
+      'Applied feature-engineering and data-transformation concepts, detected anomalies using boxplots and the IQR method, and documented possible root causes.',
+      'Wrote SQL queries and prepared Excel Pivot Table reports for descriptive analysis and stakeholder reporting.',
+      'Built practical skills in data validation, analytical problem-solving, documentation, and communicating technical findings.',
     ],
   },
 
   projects: [
     {
       index: '01',
-      eyebrow: 'AI · NUTRITION · MULTILINGUAL',
+      eyebrow: 'AI · RAG · NUTRITION · MULTILINGUAL',
       accent: 'saffron',
       title: 'Indian AI Dietician',
       description:
-        'A multilingual, voice-enabled AI Dietician built for the Indian demographic — generating culturally relevant, medically safe diet plans aligned with ICMR/NIN guidelines.',
+        'A multilingual, voice-enabled RAG application that generates personalized, ICMR/NIN-aligned diet plans for Indian users.',
       problem:
         "Most AI dietary tools are trained on Western datasets and recommend unfamiliar, expensive ingredients. They're also English-only and text-only. Indian-AI Dietician addresses this with regional-language voice support and diet plans built around affordable Indian staples.",
       solutions: [
-        'Diet plans aligned to ICMR & NIN guidelines for cardiac, PCOS, diabetes, hypertension, and pregnancy.',
-        'Multilingual voice & text interaction in English, Hindi, Kannada, Telugu, and Tamil.',
-        'Speech-to-text via Whisper Large V3 and text-to-speech via gTTS.',
-        'AI recommendations via Groq-hosted Llama 3.3 (70B), with secure bcrypt auth and JSON-based chat history.',
+        'RAG workflow that retrieves nutrition context from a vector database before the LLM generates grounded, ICMR/NIN-aligned diet plans.',
+        'Plans for cardiac, PCOS, diabetes, hypertension, and pregnancy needs.',
+        'Multilingual voice & text interaction in 5 languages — English, Hindi, Kannada, Telugu, and Tamil.',
+        'Speech-to-text via Whisper Large V3, text-to-speech via gTTS, and Google Translate API integration.',
+        'Groq-hosted Llama 3.3 (70B) for plan generation, bcrypt authentication, and persistent user-history tracking.',
       ],
-      stack: ['Python', 'Streamlit', 'Groq API', 'Llama 3.3', 'Whisper Large V3', 'Google Translate API', 'gTTS', 'bcrypt'],
+      stack: [
+        'Python',
+        'Streamlit',
+        'RAG',
+        'Vector Database',
+        'Groq API',
+        'Llama 3.3',
+        'Whisper Large V3',
+        'Google Translate API',
+        'gTTS',
+        'bcrypt',
+      ],
       repo: 'https://github.com/Rufi-1/indian-ai-dietician',
     },
     {
@@ -77,7 +114,7 @@ export const resume = {
       accent: 'mint',
       title: 'MediLingo — Healthcare Language Assistant',
       description:
-        'An AI-powered healthcare assistant that converts complex medical terminology into simple, understandable language for patients.',
+        'An AI-powered assistant that converts complex medical terminology into clear, patient-friendly explanations.',
       problem:
         'Medical reports and terminology are often difficult for patients to understand, creating communication barriers and reducing healthcare accessibility.',
       solutions: [
@@ -85,6 +122,7 @@ export const resume = {
         'Multilingual output — English and Hindi, in both written and audio form.',
         'Hindi text & speech output via gTTS for broader accessibility.',
         'User-friendly, accessible interface built with Streamlit.',
+        'Selected by one competition judge among their top three project selections at Google Prompt to Prototype.',
       ],
       stack: ['Python', 'SQL', 'Gemini API', 'Streamlit', 'gTTS'],
       repo: 'https://github.com/Rufi-1/medi-lingo',
@@ -101,11 +139,29 @@ export const resume = {
       solutions: [
         'Dynamic column-type detection — auto-identifies numeric, categorical, and date columns in any uploaded dataset.',
         'Descriptive and inferential stats (Shapiro-Wilk, t-tests, ANOVA, chi-square) applied conditionally based on data structure.',
-        '60+ auto-generated visualizations (30+ Matplotlib + 30+ Seaborn), adapted to the dataset\'s actual columns.',
+        "60+ auto-generated visualizations (30+ Matplotlib + 30+ Seaborn), adapted to the dataset's actual columns.",
         'Interactive chart builder using ipywidgets — build custom charts without writing code.',
       ],
       stack: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Seaborn', 'SciPy', 'ipywidgets', 'Google Colab'],
       repo: 'https://github.com/Rufi-1/data-analytics-studio',
+    },
+    {
+      index: '04',
+      eyebrow: 'FULL-STACK · REACT · DJANGO · IN PROGRESS',
+      accent: 'violet',
+      title: 'Personal Web & Full-Stack Projects',
+      description:
+        'Practice-driven full-stack applications focused on responsive UI, form handling, and frontend-backend integration.',
+      problem:
+        'A good full-stack application needs a responsive interface, reliable backend logic, and a clean connection between the two. These projects are where I practice all three, end to end.',
+      solutions: [
+        'Built reusable React components and managed user interactions.',
+        'Developed backend logic with Python and Django.',
+        'Connected frontend interfaces to backend services via REST APIs.',
+        'Practiced debugging, validation, error handling, and user-flow testing.',
+      ],
+      stack: ['React.js', 'JavaScript', 'HTML', 'CSS', 'Django', 'REST APIs'],
+      repo: 'https://github.com/Rufi-1',
     },
   ],
 
@@ -115,9 +171,13 @@ export const resume = {
   ],
 
   learning: [
-    'React (Frontend)',
-    'Power BI & Advanced SQL',
-    'Machine Learning & GenAI (Qspiders)',
+    'Full Stack Development & Data Science (QSpiders)',
+    'Next.js & TypeScript',
+    'Tailwind CSS & FastAPI',
+    'Node.js',
+    'Power BI',
+    'Machine Learning & MLOps',
+    'Cloud AI Platforms',
   ],
 
   softSkills: [
@@ -131,8 +191,9 @@ export const resume = {
   ],
 
   achievements: [
+    'Google Prompt to Prototype — MediLingo selected by one judge among their top three project selections',
     'Participant — India AI Impact Buildathon 2026',
     'Participant — AI for Bharat Hackathon',
-    'Built 3 independent AI/data applications',
+    'Built and deployed independent AI, data, and web applications',
   ],
 };

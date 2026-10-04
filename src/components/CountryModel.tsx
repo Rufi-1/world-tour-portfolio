@@ -55,9 +55,10 @@ type InnerProps = {
   vertical: boolean;
   rotationY: number;
   animate: boolean;
+  fit: boolean;
 };
 
-function ModelInner({ url, size, vertical, rotationY, animate }: InnerProps) {
+function ModelInner({ url, size, vertical, rotationY, animate, fit }: InnerProps) {
   const { scene: original } = useGLTF(url);
   // Every canvas works on its own copy of the model (geometry and textures are shared, so this is cheap).
   // That way, re-mounting the canvas never inherits an old scale, rotation or position.
@@ -66,7 +67,7 @@ function ModelInner({ url, size, vertical, rotationY, animate }: InnerProps) {
   const canvasWidth = useThree((state) => state.size.width);
   // On narrow screens (phones) shrink the model so it fits inside the canvas instead of being cropped
   const fitSize =
-    canvasWidth > 0 && canvasWidth < 600 ? Math.min(size, viewportWidth * 0.46) : size;
+    fit && canvasWidth > 0 && canvasWidth < 600 ? Math.min(size, viewportWidth * 0.46) : size;
   const ref = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
@@ -186,6 +187,7 @@ export function CountryModel({
           vertical={vertical}
           rotationY={rotationY}
           animate={!prefersReducedMotion}
+          fit={!background}
         />
       </Suspense>
     </Canvas>

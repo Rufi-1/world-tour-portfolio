@@ -722,23 +722,29 @@ canvas {
    Phone layout, round 3: Switzerland and the space model
    ============================================================ */
 @media (max-width: 800px) {
-  /* Switzerland: the model sits above the heading, centered, at a size you can see */
+  /* Switzerland: the decorative map lines were taking up 410px of space; keep them behind the content */
+  #beyond > .closing-decoration { position: absolute !important; }
+
+  /* Switzerland: the model sits above the heading, centered */
   #beyond .country-model--side {
     position: relative !important;
     right: auto !important;
     top: auto !important;
     transform: none !important;
-    width: min(78vw, 320px) !important;
-    height: min(78vw, 320px) !important;
-    margin: 0 auto 28px !important;
+    width: min(70vw, 280px) !important;
+    height: min(70vw, 280px) !important;
+    margin: 0 auto 8px !important;
     opacity: 1;
   }
-  /* Space / galaxy: a square above the contact heading instead of a thin strip behind the whole section */
+
+  /* Space / galaxy: a round "porthole" above the contact heading */
   #connect .country-model--bg {
     position: relative !important;
     inset: auto !important;
     width: min(86vw, 380px) !important;
     height: min(86vw, 380px) !important;
     margin: 0 auto !important;
+    border-radius: 50%;
+    overflow: hidden;
   }
 }

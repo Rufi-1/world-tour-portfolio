@@ -222,15 +222,15 @@ function App() {
             <p className="hero-intro">{resume.objective}</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => scrollTo('work')}>
-                Explore my work <ArrowDown size={16} />
+                View projects <ArrowDown size={16} />
               </button>
               <a className="text-link" href={`mailto:${resume.email}`}>
-                Start a conversation <ArrowUpRight size={16} />
+                Contact me <ArrowUpRight size={16} />
               </a>
             </div>
             <div className="hero-meta">
               <span>
-                <i className="status-dot" /> Open to opportunities
+                <i className="status-dot" /> Available for immediate full-time joining
               </span>
               <span>
                 Mysuru, IN <Globe2 size={13} />
@@ -286,12 +286,16 @@ function App() {
               <div className="about-copy">
                 <p className="large-copy">
                   I enjoy the space between a question and its answer — cleaning the details,
-                  testing assumptions, and finding the story a dataset was trying to tell.
+                  testing assumptions, and turning what I find into tools people can actually use.
                 </p>
                 <p>
-                  I am currently completing my BCA at Maharani's Science College for Women. My
-                  internship at Spatialhawk gave me an appreciation for dependable data work: the
-                  unglamorous preparation that makes every confident decision possible.
+                  I am a BCA graduate from Mysuru with hands-on experience building and deploying
+                  Python and JavaScript applications, from Generative AI and RAG to data analytics
+                  and full-stack web development. My data analytics internship at Spatialhawk
+                  taught me dependable data work, and I have built independent AI products,
+                  including a healthcare language tool that a judge at Google&apos;s Prompt to
+                  Prototype picked among their top three. I am now training in Full Stack
+                  Development and Data Science at QSpiders, Mysuru.
                 </p>
                 <div className="stat-row">
                   <div>
